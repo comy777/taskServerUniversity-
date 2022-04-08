@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const jwt_1 = require("../jwt/jwt");
+const express_validator_1 = require("express-validator");
+const validate_1 = require("../middlewares/validate");
+const task_1 = require("../controllers/task");
+const taskRouter = (0, express_1.Router)();
+taskRouter.get("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "Id no valido").isMongoId(), validate_1.validate], task_1.getTasks);
+taskRouter.post("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "No es un id valido").isMongoId(), validate_1.validate], task_1.saveTask);
+taskRouter.put("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "No es un id valido").isMongoId(), validate_1.validate], task_1.editTask);
+taskRouter.delete("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "No es un id valido").isMongoId(), validate_1.validate], task_1.deleteTask);
+exports.default = taskRouter;
