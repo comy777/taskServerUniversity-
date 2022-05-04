@@ -2,7 +2,13 @@ import { Router } from "express";
 import { validateToken } from "../jwt/jwt";
 import { check } from "express-validator";
 import { validate } from "../middlewares/validate";
-import { getTasks, saveTask, editTask, deleteTask } from "../controllers/task";
+import {
+  getTasks,
+  saveTask,
+  editTask,
+  deleteTask,
+  completeTask,
+} from "../controllers/task";
 
 const taskRouter = Router();
 
@@ -28,6 +34,12 @@ taskRouter.delete(
   "/:id",
   [validateToken, check("id", "No es un id valido").isMongoId(), validate],
   deleteTask
+);
+
+taskRouter.put(
+  "/complete/:id",
+  [validateToken, check("id", "No es un id valido").isMongoId(), validate],
+  completeTask
 );
 
 export default taskRouter;

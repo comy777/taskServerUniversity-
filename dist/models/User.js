@@ -32,17 +32,13 @@ const UserSchema = new mongoose_1.Schema({
         type: Boolean,
         default: true,
     },
-    created: {
-        type: Date,
-        default: Date.now(),
-    },
     image: {
         type: String,
         default: "",
     },
-});
+}, { timestamps: true });
 UserSchema.methods.toJSON = function () {
-    const _a = this.toObject(), { __v, created, password, state } = _a, data = __rest(_a, ["__v", "created", "password", "state"]);
+    const _a = this.toObject(), { __v, createdAt, updatedAt, password, state } = _a, data = __rest(_a, ["__v", "createdAt", "updatedAt", "password", "state"]);
     return data;
 };
 exports.default = (0, mongoose_1.model)("user", UserSchema);

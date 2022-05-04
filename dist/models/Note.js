@@ -29,10 +29,6 @@ const NoteSchema = new mongoose_1.Schema({
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "user",
     },
-    created: {
-        type: Date,
-        default: Date.now(),
-    },
     state: {
         type: Boolean,
         default: true,
@@ -44,7 +40,7 @@ const NoteSchema = new mongoose_1.Schema({
         },
         default: [],
     },
-});
+}, { timestamps: true });
 NoteSchema.methods.toJSON = function () {
     const _a = this.toObject(), { __v, created, state, user, lesson } = _a, data = __rest(_a, ["__v", "created", "state", "user", "lesson"]);
     return data;

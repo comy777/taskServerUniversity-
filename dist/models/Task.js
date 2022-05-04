@@ -38,10 +38,6 @@ const TaskSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
-    created: {
-        type: Date,
-        default: Date.now(),
-    },
     images: {
         type: Array,
         image: {
@@ -53,7 +49,7 @@ const TaskSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now(),
     },
-});
+}, { timestamps: true });
 TaskSchema.methods.toJSON = function () {
     const _a = this.toObject(), { __v, created, state, user } = _a, data = __rest(_a, ["__v", "created", "state", "user"]);
     return data;

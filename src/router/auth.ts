@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { login, register } from "../controllers/auth";
+import { login, register, setProfile, getUser } from "../controllers/auth";
+import { validateToken } from "../jwt/jwt";
 import { validate } from "../middlewares/validate";
 
 const authRouter = Router();
@@ -29,5 +30,9 @@ authRouter.post(
   ],
   register
 );
+
+authRouter.get("/", [validateToken], getUser);
+
+authRouter.put("/", [validateToken], setProfile);
 
 export default authRouter;

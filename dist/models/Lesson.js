@@ -22,10 +22,6 @@ const LessonSchema = new mongoose_1.Schema({
         type: Boolean,
         default: true,
     },
-    created: {
-        type: Date,
-        default: Date.now(),
-    },
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "user",
@@ -43,6 +39,8 @@ const LessonSchema = new mongoose_1.Schema({
         type: Array,
         default: [{ day: String, hours: String }],
     },
+}, {
+    timestamps: true,
 });
 LessonSchema.methods.toJSON = function () {
     const _a = this.toObject(), { __v, created, state, user } = _a, data = __rest(_a, ["__v", "created", "state", "user"]);

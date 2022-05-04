@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadImage = void 0;
+exports.deleteImageUpload = exports.uploadImage = void 0;
 const upload_1 = require("../utils/upload");
 const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -34,3 +34,19 @@ const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.uploadImage = uploadImage;
+const deleteImageUpload = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const resp = yield (0, upload_1.deleteImage)(id);
+        if (!resp)
+            res.send({ error: "Error al eliminar la imagen, o imagen no existe" });
+        return res.send({ msg: "Imagen Eliminada" });
+    }
+    catch (error) {
+        console.log(error);
+        res.send({
+            error: "Error del servidor",
+        });
+    }
+});
+exports.deleteImageUpload = deleteImageUpload;

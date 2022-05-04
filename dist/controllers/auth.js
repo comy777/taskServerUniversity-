@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = exports.login = void 0;
+exports.setProfile = exports.getUser = exports.register = exports.login = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const User_1 = __importDefault(require("../models/User"));
 const jwt_1 = require("../jwt/jwt");
+const upload_1 = require("../utils/upload");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     const user = yield User_1.default.findOne({ email });
@@ -48,3 +49,37 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.register = register;
+const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.user;
+    const user = yield User_1.default.findById(id);
+    if (!user)
+        return res.send({ error: "Usuario no registrado" });
+    return res.send({ user });
+});
+exports.getUser = getUser;
+const setProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.user;
+    const userValid = yield User_1.default.findById(id);
+    if (!userValid)
+        return res.send({ error: "Usuario no registrado" });
+    const { image } = userValid;
+    const { image: imageNew } = req.body;
+    if (imageNew) {
+        if (image) {
+            const idImage = image.split("/");
+            let data = idImage[idImage.length - 1];
+            data = data.split(".");
+            const resp = yield (0, upload_1.deleteImage)(data[0]);
+            if (!resp)
+                return res.send({ error: "Error del servidor" });
+        }
+    }
+    try {
+        const resp = yield User_1.default.findByIdAndUpdate(id, req.body, { new: true });
+        return res.send({ user: resp });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.setProfile = setProfile;

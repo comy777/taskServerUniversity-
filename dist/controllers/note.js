@@ -15,9 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteNote = exports.editNote = exports.saveNote = exports.getNotes = void 0;
 const Lesson_1 = __importDefault(require("../models/Lesson"));
 const Note_1 = __importDefault(require("../models/Note"));
+const upload_1 = require("../utils/upload");
 const getNotes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.user;
     const { lesson } = req.params;
+    const lessonValid = yield Lesson_1.default.findById(lesson);
+    if (!lessonValid)
+        return res.send({ error: "La clase no existe" });
     const query = { state: true, user: id, lesson };
     const notes = yield Note_1.default.find(query);
     return res.send({ notes });
@@ -26,8 +30,9 @@ exports.getNotes = getNotes;
 const saveNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.user;
     const { lesson } = req.params;
-    const query = { user: id, _id: lesson };
-    const lessonValid = yield Lesson_1.default.findById(query);
+    const lessonValid = yield Lesson_1.default.findById(lesson);
+    if (!lessonValid)
+        return res.send({ error: "La clase no esta registrada" });
     if (!lessonValid.state)
         return res.send({ error: "La clase no esta registrada" });
     const note = new Note_1.default(req.body);
@@ -52,8 +57,10 @@ const editNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (noteValid.user.toString() !== id)
         return res.send({ error: "No tiene permisos para eliminar la nota" });
     try {
-        yield Note_1.default.findOneAndUpdate({ _id: note_id }, req.body, { new: true });
-        return res.send({ msg: "Nota actualizada" });
+        const note = yield Note_1.default.findOneAndUpdate({ _id: note_id }, req.body, {
+            new: true,
+        });
+        return res.send({ note });
     }
     catch (error) {
         console.log(error);
@@ -71,8 +78,19 @@ const deleteNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         return res.send({ error: "La nota no esta registrada" });
     if (noteValid.user.toString() !== id)
         return res.send({ error: "No tiene permisos para eliminar la nota" });
+    const { images } = noteValid;
+    if (images.length > 0) {
+        images.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+            const idImage = item.uri.split("/");
+            let data = idImage[idImage.length - 1];
+            data = data.split(".");
+            const resp = yield (0, upload_1.deleteImage)(data[0]);
+            if (!resp)
+                return res.send({ error: "Error del servidor" });
+        }));
+    }
     try {
-        yield Note_1.default.findOneAndUpdate({ _id: note_id }, { state: false });
+        yield Note_1.default.findOneAndUpdate({ _id: note_id }, { state: false, images: [] });
         return res.send({ msg: "Nota eliminada" });
     }
     catch (error) {

@@ -10,4 +10,5 @@ taskRouter.get("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id"
 taskRouter.post("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "No es un id valido").isMongoId(), validate_1.validate], task_1.saveTask);
 taskRouter.put("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "No es un id valido").isMongoId(), validate_1.validate], task_1.editTask);
 taskRouter.delete("/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "No es un id valido").isMongoId(), validate_1.validate], task_1.deleteTask);
+taskRouter.put("/complete/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "No es un id valido").isMongoId(), validate_1.validate], task_1.completeTask);
 exports.default = taskRouter;
