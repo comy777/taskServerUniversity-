@@ -11,6 +11,7 @@ import uploadRouter from "../router/upload";
 
 class Server {
   public app: express.Application;
+  public port: number;
   public path: {
     auth: string;
     lessons: string;
@@ -20,6 +21,7 @@ class Server {
   };
   constructor() {
     this.app = express();
+    this.port = process.env.PORT;
     this.path = {
       auth: "/auth",
       lessons: "/lessons",
@@ -39,8 +41,8 @@ class Server {
   }
 
   public start() {
-    this.app.listen(() => {
-      console.log(`Server port: `);
+    this.app.listen(this.port, () => {
+      console.log(`Server port: ${this.port}`);
     });
   }
 
