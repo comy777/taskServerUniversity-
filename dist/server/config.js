@@ -35,7 +35,7 @@ class Server {
             this.app.use(this.path.upload, upload_1.default);
         };
         this.app = (0, express_1.default)();
-        this.port = process.env.PORT;
+        this.port = process.env.PORT || 1337;
         this.path = {
             auth: "/auth",
             lessons: "/lessons",
