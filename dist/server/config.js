@@ -35,7 +35,6 @@ class Server {
             this.app.use(this.path.upload, upload_1.default);
         };
         this.app = (0, express_1.default)();
-        this.port = process.env.PORT;
         this.path = {
             auth: "/auth",
             lessons: "/lessons",
@@ -51,8 +50,8 @@ class Server {
         this.routes();
     }
     start() {
-        this.app.listen(this.port, () => {
-            console.log(`Server port: ${this.port}`);
+        this.app.listen(() => {
+            console.log(`Server port: `);
         });
     }
     publicFolder() {
