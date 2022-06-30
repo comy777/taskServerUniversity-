@@ -6,7 +6,7 @@ const express_validator_1 = require("express-validator");
 const validate_1 = require("../middlewares/validate");
 const task_1 = require("../controllers/task");
 const taskRouter = (0, express_1.Router)();
-taskRouter.get('/:lesson', [jwt_1.validateToken, (0, express_validator_1.check)('id', 'Id no valido').isMongoId(), validate_1.validate], task_1.getTasks);
+taskRouter.get('/:lesson', [jwt_1.validateToken, (0, express_validator_1.check)('lesson', 'Id no valido').isMongoId(), validate_1.validate], task_1.getTasks);
 taskRouter.post('/:id', [jwt_1.validateToken, (0, express_validator_1.check)('id', 'No es un id valido').isMongoId(), validate_1.validate], task_1.saveTask);
 taskRouter.put('/:id', [jwt_1.validateToken, (0, express_validator_1.check)('id', 'No es un id valido').isMongoId(), validate_1.validate], task_1.editTask);
 taskRouter.delete('/:id', [jwt_1.validateToken, (0, express_validator_1.check)('id', 'No es un id valido').isMongoId(), validate_1.validate], task_1.deleteTask);
