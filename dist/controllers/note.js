@@ -21,7 +21,7 @@ const getNotes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { lesson } = req.params;
     const lessonValid = yield Lesson_1.default.findById(lesson);
     if (!lessonValid)
-        return res.send({ error: "La clase no existe" });
+        return res.send({ error: 'La clase no existe' });
     const query = { state: true, user: id, lesson };
     const notes = yield Note_1.default.find(query);
     return res.send({ notes });
@@ -32,9 +32,9 @@ const saveNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { lesson } = req.params;
     const lessonValid = yield Lesson_1.default.findById(lesson);
     if (!lessonValid)
-        return res.send({ error: "La clase no esta registrada" });
+        return res.send({ error: 'La clase no esta registrada' });
     if (!lessonValid.state)
-        return res.send({ error: "La clase no esta registrada" });
+        return res.send({ error: 'La clase no esta registrada' });
     const note = new Note_1.default(req.body);
     note.user = id;
     note.lesson = lesson;
@@ -44,7 +44,7 @@ const saveNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
         console.log(error);
-        return res.send({ error: "Error del servidor" });
+        return res.send({ error: 'Error del servidor' });
     }
 });
 exports.saveNote = saveNote;
@@ -53,18 +53,18 @@ const editNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { note_id } = req.params;
     const noteValid = yield Note_1.default.findById(note_id);
     if (!noteValid.state)
-        return res.send({ error: "La nota no esta registrada" });
+        return res.send({ error: 'La nota no esta registrada' });
     if (noteValid.user.toString() !== id)
-        return res.send({ error: "No tiene permisos para eliminar la nota" });
+        return res.send({ error: 'No tiene permisos para eliminar la nota' });
     try {
         const note = yield Note_1.default.findOneAndUpdate({ _id: note_id }, req.body, {
-            new: true,
+            new: true
         });
         return res.send({ note });
     }
     catch (error) {
         console.log(error);
-        return res.send({ error: "Error del servidor" });
+        return res.send({ error: 'Error del servidor' });
     }
 });
 exports.editNote = editNote;
@@ -73,29 +73,29 @@ const deleteNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { note_id } = req.params;
     const noteValid = yield Note_1.default.findById(note_id);
     if (!noteValid)
-        return res.send({ error: "Nota no encontrada" });
+        return res.send({ error: 'Nota no encontrada' });
     if (!noteValid.state)
-        return res.send({ error: "La nota no esta registrada" });
+        return res.send({ error: 'La nota no esta registrada' });
     if (noteValid.user.toString() !== id)
-        return res.send({ error: "No tiene permisos para eliminar la nota" });
+        return res.send({ error: 'No tiene permisos para eliminar la nota' });
     const { images } = noteValid;
     if (images.length > 0) {
         images.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            const idImage = item.uri.split("/");
+            const idImage = item.url.split('/');
             let data = idImage[idImage.length - 1];
-            data = data.split(".");
+            data = data.split('.');
             const resp = yield (0, upload_1.deleteImage)(data[0]);
             if (!resp)
-                return res.send({ error: "Error del servidor" });
+                return res.send({ error: 'Error del servidor' });
         }));
     }
     try {
         yield Note_1.default.findOneAndUpdate({ _id: note_id }, { state: false, images: [] });
-        return res.send({ msg: "Nota eliminada" });
+        return res.send({ msg: 'Nota eliminada' });
     }
     catch (error) {
         console.log(error);
-        return res.send({ error: "Error del servidor" });
+        return res.send({ error: 'Error del servidor' });
     }
 });
 exports.deleteNote = deleteNote;
