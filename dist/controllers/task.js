@@ -17,14 +17,12 @@ const Lesson_1 = __importDefault(require("../models/Lesson"));
 const Task_1 = __importDefault(require("../models/Task"));
 const upload_1 = require("../utils/upload");
 const getTasks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = req.user;
-    const { lesson: lessonsId } = req.params;
-    const lesson = yield Lesson_1.default.findById(lessonsId);
-    if (!lesson)
-        return res.send({ error: 'La calse no se encuentra registrada' });
-    if (lesson.user.toString() !== user)
-        return res.send({ error: 'Error de autentificacion' });
-    const query = { user, state: true, lesson: lessonsId };
+    const id = req.user;
+    const { lesson } = req.params;
+    const lessonValid = yield Lesson_1.default.findById(lesson);
+    if (!lessonValid)
+        return res.send({ error: 'La clase no existe' });
+    const query = { state: true, user: id, lesson };
     const tasks = yield Task_1.default.find(query);
     return res.send({ tasks });
 });

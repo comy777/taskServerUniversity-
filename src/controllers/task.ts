@@ -4,12 +4,11 @@ import Task from '../models/Task';
 import { deleteImage } from '../utils/upload';
 
 export const getTasks = async (req: Request, res: Response) => {
-	const user = req.user;
-	const { lesson: lessonsId } = req.params;
-	const lesson = await Lesson.findById(lessonsId);
-	if (!lesson) return res.send({ error: 'La calse no se encuentra registrada' });
-	if (lesson.user.toString() !== user) return res.send({ error: 'Error de autentificacion' });
-	const query = { user, state: true, lesson: lessonsId };
+	const id = req.user;
+	const { lesson } = req.params;
+	const lessonValid = await Lesson.findById(lesson);
+	if (!lessonValid) return res.send({ error: 'La clase no existe' });
+	const query = { state: true, user: id, lesson };
 	const tasks = await Task.find(query);
 	return res.send({ tasks });
 };
