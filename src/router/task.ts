@@ -6,7 +6,7 @@ import { getTasks, saveTask, editTask, deleteTask, completeTask } from '../contr
 
 const taskRouter = Router();
 
-taskRouter.get('/:lesson', [ validateToken, check('id', 'Id no valido').isMongoId(), validate ], getTasks);
+taskRouter.get('/:lesson', [ validateToken, check('lesson', 'Id no valido').isMongoId(), validate ], getTasks);
 
 taskRouter.post('/:id', [ validateToken, check('id', 'No es un id valido').isMongoId(), validate ], saveTask);
 
