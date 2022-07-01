@@ -58,7 +58,7 @@ export const deleteTask = async (req: Request, res: Response) => {
 	const { images } = taskValid;
 	if (images.length > 0) {
 		images.map(async (item: any) => {
-			const idImage = item.uri.split('/');
+			const idImage = item.url.split('/');
 			let data = idImage[idImage.length - 1];
 			data = data.split('.');
 			const resp = await deleteImage(data[0]);

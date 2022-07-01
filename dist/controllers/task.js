@@ -81,7 +81,7 @@ const deleteTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { images } = taskValid;
     if (images.length > 0) {
         images.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            const idImage = item.uri.split('/');
+            const idImage = item.url.split('/');
             let data = idImage[idImage.length - 1];
             data = data.split('.');
             const resp = yield (0, upload_1.deleteImage)(data[0]);
