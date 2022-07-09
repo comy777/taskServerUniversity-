@@ -19,7 +19,7 @@ const generateToken = (user) => {
     const payload = { id: user._id, email: user.email };
     try {
         return jsonwebtoken_1.default.sign(payload, process.env.SECRET_KEY, {
-            expiresIn: "7d",
+            expiresIn: '7d'
         });
     }
     catch (error) {
@@ -28,21 +28,21 @@ const generateToken = (user) => {
 };
 exports.generateToken = generateToken;
 const validateToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.headers["authorization"];
+    const token = req.headers['authorization'];
     if (!token)
-        return res.send({ error: "Token requerido" });
+        return res.send({ error: 'Token requerido' });
     try {
         const data = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY);
         const { id } = data;
         const user = yield User_1.default.findById(id);
         if (!user.state)
-            return res.send({ error: "El usuario no esta registrado" });
+            return res.send({ error: 'El usuario no esta registrado' });
         req.user = id;
         next();
     }
     catch (error) {
         console.log(error);
-        return res.send({ error: "Error del servidor" });
+        return res.send({ error: 'Refrescar token' });
     }
 });
 exports.validateToken = validateToken;
