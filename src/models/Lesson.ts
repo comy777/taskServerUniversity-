@@ -28,6 +28,10 @@ const LessonSchema = new Schema(
       type: Array,
       default: [{ day: String, hours: String }],
     },
+    classroom: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
