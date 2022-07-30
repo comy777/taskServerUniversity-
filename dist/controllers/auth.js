@@ -51,6 +51,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.register = register;
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.user;
+    console.log(id);
     const user = yield User_1.default.findById(id);
     if (!user)
         return res.send({ error: "Usuario no registrado" });

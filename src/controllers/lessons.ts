@@ -1,6 +1,5 @@
 import { Response, Request } from "express";
 import Lesson from "../models/Lesson";
-import User from "../models/User";
 
 export const getLessons = async (req: Request, res: Response) => {
   const user = req.user;

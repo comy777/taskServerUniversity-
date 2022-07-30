@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { User } from "../interfaces/interfaces";
+import { User as UserInterface } from "../interfaces/interfaces";
+import User from "../models/User";
 import UserSchema from "../models/User";
 
-export const generateToken = (user: User): string => {
+export const generateToken = (user: UserInterface): string => {
   const payload = { id: user._id, email: user.email };
   try {
     return jwt.sign(payload, process.env.SECRET_KEY, {
@@ -18,36 +19,32 @@ export const generateToken = (user: User): string => {
 export const validateToken = async (
   req: Request,
   res: Response,
-  next: Function,
-  dataToken?: string
+  next: Function
 ) => {
   const token = req.headers["authorization"];
   if (!token) return res.send({ error: "Token requerido" });
+  const dataToken = await refreshToken(token);
   try {
-    const data: any = dataToken
-      ? jwt.verify(dataToken, process.env.SECRET_KEY)
-      : jwt.verify(token, process.env.SECRET_KEY);
-    console.log(data);
+    const data: any = jwt.verify(dataToken, process.env.SECRET_KEY);
     const { id } = data;
+    console.log(data);
     const user = await UserSchema.findById(id);
+    console.log(user);
     if (!user.state)
       return res.send({ error: "El usuario no esta registrado" });
     req.user = id;
     next();
   } catch (error) {
     console.log(error);
-    const dataToken = refreshToken(token);
-    validateToken(req, res, next, dataToken);
     return res.send({ error: "Refrescar token" });
   }
 };
 
-export const refreshToken = (token: string) => {
-  try {
-    const userToken: any = jwt.decode(token);
-    const dataToken: string = generateToken(userToken);
-    return dataToken;
-  } catch (error) {
-    console.log(error);
-  }
+export const refreshToken = async (token: string) => {
+  const userToken: any = jwt.decode(token);
+  const { id } = userToken;
+  const user = await User.findById(id);
+  if (!user) return "Error";
+  const dataToken: string = generateToken(user);
+  return dataToken;
 };

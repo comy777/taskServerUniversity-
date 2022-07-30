@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.refreshToken = exports.validateToken = exports.generateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
+const User_2 = __importDefault(require("../models/User"));
 const generateToken = (user) => {
     const payload = { id: user._id, email: user.email };
     try {
@@ -28,17 +29,17 @@ const generateToken = (user) => {
     }
 };
 exports.generateToken = generateToken;
-const validateToken = (req, res, next, dataToken) => __awaiter(void 0, void 0, void 0, function* () {
+const validateToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.headers["authorization"];
     if (!token)
         return res.send({ error: "Token requerido" });
+    const dataToken = yield (0, exports.refreshToken)(token);
     try {
-        const data = dataToken
-            ? jsonwebtoken_1.default.verify(dataToken, process.env.SECRET_KEY)
-            : jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY);
-        console.log(data);
+        const data = jsonwebtoken_1.default.verify(dataToken, process.env.SECRET_KEY);
         const { id } = data;
-        const user = yield User_1.default.findById(id);
+        console.log(data);
+        const user = yield User_2.default.findById(id);
+        console.log(user);
         if (!user.state)
             return res.send({ error: "El usuario no esta registrado" });
         req.user = id;
@@ -46,20 +47,17 @@ const validateToken = (req, res, next, dataToken) => __awaiter(void 0, void 0, v
     }
     catch (error) {
         console.log(error);
-        const dataToken = (0, exports.refreshToken)(token);
-        (0, exports.validateToken)(req, res, next, dataToken);
         return res.send({ error: "Refrescar token" });
     }
 });
 exports.validateToken = validateToken;
-const refreshToken = (token) => {
-    try {
-        const userToken = jsonwebtoken_1.default.decode(token);
-        const dataToken = (0, exports.generateToken)(userToken);
-        return dataToken;
-    }
-    catch (error) {
-        console.log(error);
-    }
-};
+const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    const userToken = jsonwebtoken_1.default.decode(token);
+    const { id } = userToken;
+    const user = yield User_1.default.findById(id);
+    if (!user)
+        return "Error";
+    const dataToken = (0, exports.generateToken)(user);
+    return dataToken;
+});
 exports.refreshToken = refreshToken;
