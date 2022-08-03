@@ -27,9 +27,7 @@ export const validateToken = async (
   try {
     const data: any = jwt.verify(dataToken, process.env.SECRET_KEY);
     const { id } = data;
-    console.log(data);
     const user = await UserSchema.findById(id);
-    console.log(user);
     if (!user.state)
       return res.send({ error: "El usuario no esta registrado" });
     req.user = id;

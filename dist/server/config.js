@@ -22,6 +22,7 @@ const lessons_1 = __importDefault(require("../router/lessons"));
 const notes_1 = __importDefault(require("../router/notes"));
 const task_1 = __importDefault(require("../router/task"));
 const upload_1 = __importDefault(require("../router/upload"));
+const schedlue_1 = __importDefault(require("../router/schedlue"));
 class Server {
     constructor() {
         this.db = () => __awaiter(this, void 0, void 0, function* () {
@@ -33,6 +34,7 @@ class Server {
             this.app.use(this.path.notes, notes_1.default);
             this.app.use(this.path.task, task_1.default);
             this.app.use(this.path.upload, upload_1.default);
+            this.app.use(this.path.schedlue, schedlue_1.default);
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || 1337;
@@ -42,6 +44,7 @@ class Server {
             notes: "/notes",
             task: "/tasks",
             upload: "/upload",
+            schedlue: "/schedlue",
         };
         //Database
         this.db();

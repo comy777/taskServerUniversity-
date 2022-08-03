@@ -8,6 +8,7 @@ import lessonsRouter from "../router/lessons";
 import notesRouter from "../router/notes";
 import taskRouter from "../router/task";
 import uploadRouter from "../router/upload";
+import schedlueRouter from "../router/schedlue";
 
 class Server {
   public app: express.Application;
@@ -18,6 +19,7 @@ class Server {
     notes: string;
     task: string;
     upload: string;
+    schedlue: string;
   };
   constructor() {
     this.app = express();
@@ -28,6 +30,7 @@ class Server {
       notes: "/notes",
       task: "/tasks",
       upload: "/upload",
+      schedlue: "/schedlue",
     };
 
     //Database
@@ -74,6 +77,7 @@ class Server {
     this.app.use(this.path.notes, notesRouter);
     this.app.use(this.path.task, taskRouter);
     this.app.use(this.path.upload, uploadRouter);
+    this.app.use(this.path.schedlue, schedlueRouter);
   };
 }
 
