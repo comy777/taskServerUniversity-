@@ -11,7 +11,8 @@ export const getSchedlue = async (req: Request, resp: Response) => {
 export const saveSchedlue = async (req: Request, resp: Response) => {
   const user = req.user;
   const { day } = req.body;
-  const schedlue = await Schedlue.findOne({ day });
+  const query = { day, user };
+  const schedlue = await Schedlue.findOne(query);
   if (schedlue)
     return resp.send({ error: "El dia ya se encuentra registrado" });
   const data = new Schedlue(req.body);

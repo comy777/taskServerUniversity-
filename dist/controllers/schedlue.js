@@ -35,7 +35,8 @@ exports.getSchedlue = getSchedlue;
 const saveSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { day } = req.body;
-    const schedlue = yield Schedlue_1.default.findOne({ day });
+    const query = { day, user };
+    const schedlue = yield Schedlue_1.default.findOne(query);
     if (schedlue)
         return resp.send({ error: "El dia ya se encuentra registrado" });
     const data = new Schedlue_1.default(req.body);
