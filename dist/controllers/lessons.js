@@ -19,6 +19,14 @@ const getLessons = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const user = req.user;
     const query = { user, state: true };
     const lessons = yield Lesson_1.default.find(query);
+    if (lessons.length === 0) {
+        const data = yield Schedlue_1.default.find({ user });
+        if (data.length > 0) {
+            data.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
+                yield Schedlue_1.default.findByIdAndDelete(item._id);
+            }));
+        }
+    }
     return res.send({ lessons });
 });
 exports.getLessons = getLessons;

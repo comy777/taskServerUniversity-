@@ -7,6 +7,14 @@ export const getLessons = async (req: Request, res: Response) => {
   const user = req.user;
   const query = { user, state: true };
   const lessons = await Lesson.find(query);
+  if (lessons.length === 0) {
+    const data = await Schedlue.find({ user });
+    if (data.length > 0) {
+      data.forEach(async (item) => {
+        await Schedlue.findByIdAndDelete(item._id);
+      });
+    }
+  }
   return res.send({ lessons });
 };
 
