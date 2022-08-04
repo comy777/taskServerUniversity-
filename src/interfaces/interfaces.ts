@@ -15,3 +15,17 @@ export interface ScheduleResponse {
   classroom: string;
   _id: string;
 }
+
+export interface LessonResponse {
+  lesson: string;
+  nrc: string;
+  teacher: string;
+  schedlue: Schedule[];
+  classroom: string;
+  user: string;
+}
+
+interface Schedule {
+  day: string;
+  hours: string;
+}

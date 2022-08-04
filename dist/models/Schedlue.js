@@ -30,10 +30,6 @@ const SchedlueSchema = new mongoose_1.Schema({
         ref: "user",
         required: [true, "El usuario es requerido"],
     },
-    classroom: {
-        type: String,
-        default: "",
-    },
 }, {
     timestamps: true,
 });

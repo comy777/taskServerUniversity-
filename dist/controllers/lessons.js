@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteLesson = exports.editLesson = exports.saveLesson = exports.getLessons = void 0;
 const Lesson_1 = __importDefault(require("../models/Lesson"));
+const Schedlue_1 = __importDefault(require("../models/Schedlue"));
 const getLessons = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const query = { user, state: true };
@@ -68,6 +69,21 @@ const deleteLesson = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         return res.send({ error: "La clase no existe" });
     if (lesson.user.toString() !== user)
         return res.send({ error: "No puede modificar esta clase" });
+    const { schedlue } = lesson;
+    const query = { user };
+    const data = yield Schedlue_1.default.find(query);
+    data.forEach((item) => {
+        schedlue.forEach((j) => __awaiter(void 0, void 0, void 0, function* () {
+            if (item.day === j.day.toUpperCase()) {
+                const { hours } = j;
+                const { schedlue, _id } = item;
+                if (schedlue.includes(hours)) {
+                    const resp = schedlue.filter((i) => i !== hours);
+                    yield Schedlue_1.default.findByIdAndUpdate(_id, { schedlue: resp });
+                }
+            }
+        }));
+    });
     try {
         yield Lesson_1.default.findOneAndUpdate({ _id: id }, { state: false });
         return res.send({ msg: "Clase eliminada" });

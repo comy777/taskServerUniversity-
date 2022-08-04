@@ -1,5 +1,7 @@
 import { Response, Request } from "express";
 import Lesson from "../models/Lesson";
+import Schedlue from "../models/Schedlue";
+import { ScheduleResponse, LessonResponse } from "../interfaces/interfaces";
 
 export const getLessons = async (req: Request, res: Response) => {
   const user = req.user;
@@ -45,10 +47,25 @@ export const editLesson = async (req: Request, res: Response) => {
 export const deleteLesson = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.user;
-  const lesson = await Lesson.findById(id);
+  const lesson = await Lesson.findById<LessonResponse>(id);
   if (!lesson) return res.send({ error: "La clase no existe" });
   if (lesson.user.toString() !== user)
     return res.send({ error: "No puede modificar esta clase" });
+  const { schedlue } = lesson;
+  const query = { user };
+  const data = await Schedlue.find<ScheduleResponse>(query);
+  data.forEach((item) => {
+    schedlue.forEach(async (j) => {
+      if (item.day === j.day.toUpperCase()) {
+        const { hours } = j;
+        const { schedlue, _id } = item;
+        if (schedlue.includes(hours)) {
+          const resp = schedlue.filter((i) => i !== hours);
+          await Schedlue.findByIdAndUpdate(_id, { schedlue: resp });
+        }
+      }
+    });
+  });
   try {
     await Lesson.findOneAndUpdate({ _id: id }, { state: false });
     return res.send({ msg: "Clase eliminada" });
