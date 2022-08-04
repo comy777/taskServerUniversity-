@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import Schedlue from "../models/Schedlue";
+import { ScheduleResponse } from "../interfaces/interfaces";
 
 export const getSchedlue = async (req: Request, resp: Response) => {
   const user = req.user;
   const query = { user };
-  const data = await Schedlue.find(query).sort({ day: 1 });
+  const data = await Schedlue.find<ScheduleResponse>(query).sort({ day: 1 });
   return resp.send({ schedlue: data });
 };
 

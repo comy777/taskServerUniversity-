@@ -8,3 +8,10 @@ export interface ImageCloudinary {
   tempFilePath: string;
   name: string;
 }
+
+export interface ScheduleResponse {
+  day: string;
+  schedlue: string[];
+  classroom: string;
+  _id: string;
+}
