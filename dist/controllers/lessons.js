@@ -32,10 +32,13 @@ const getLessons = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getLessons = getLessons;
 const saveLesson = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.user;
-    const lessonName = yield Lesson_1.default.findOne({ lesson: req.body.lesson });
+    const lessonName = yield Lesson_1.default.findOne({
+        lesson: req.body.lesson,
+        state: true,
+    });
     if (lessonName)
         return res.send({ error: "La clase ya esta registrada" });
-    const lessonNrc = yield Lesson_1.default.findOne({ nrc: req.body.nrc });
+    const lessonNrc = yield Lesson_1.default.findOne({ nrc: req.body.nrc, state: true });
     if (lessonNrc)
         return res.send({ error: "La clase ya esta registrada" });
     const lesson = new Lesson_1.default(req.body);

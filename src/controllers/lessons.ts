@@ -20,9 +20,12 @@ export const getLessons = async (req: Request, res: Response) => {
 
 export const saveLesson = async (req: Request, res: Response) => {
   const id = req.user;
-  const lessonName = await Lesson.findOne({ lesson: req.body.lesson });
+  const lessonName = await Lesson.findOne({
+    lesson: req.body.lesson,
+    state: true,
+  });
   if (lessonName) return res.send({ error: "La clase ya esta registrada" });
-  const lessonNrc = await Lesson.findOne({ nrc: req.body.nrc });
+  const lessonNrc = await Lesson.findOne({ nrc: req.body.nrc, state: true });
   if (lessonNrc) return res.send({ error: "La clase ya esta registrada" });
   const lesson = new Lesson(req.body);
   lesson.user = id;
