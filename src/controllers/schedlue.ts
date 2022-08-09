@@ -5,8 +5,43 @@ import { ScheduleResponse } from "../interfaces/interfaces";
 export const getSchedlue = async (req: Request, resp: Response) => {
   const user = req.user;
   const query = { user };
-  const data = await Schedlue.find<ScheduleResponse>(query).sort({ day: 1 });
-  return resp.send({ schedlue: data });
+  const data = await Schedlue.find<ScheduleResponse>(query);
+  const arr: any[] = [];
+  data.forEach((item, i) => {
+    if (item.day === "LUNES") {
+      arr[i] = { item, index: 0 };
+      return;
+    }
+    if (item.day === "MARTES") {
+      arr[i] = { item, index: 1 };
+      return;
+    }
+    if (item.day === "MIERCOLES") {
+      arr[i] = { item, index: 2 };
+      return;
+    }
+    if (item.day === "JUEVES") {
+      arr[i] = { item, index: 3 };
+      return;
+    }
+    if (item.day === "VIERNES") {
+      arr[i] = { item, index: 4 };
+      return;
+    }
+    if (item.day === "SABADO") {
+      arr[i] = { item, index: 5 };
+      return;
+    }
+  });
+  const orden = arr.sort((a, b) => {
+    if (a.index < b.index) return -1;
+    return 1;
+  });
+  const schedule = orden.map((item) => {
+    const { index, ...data } = item;
+    return data;
+  });
+  return resp.send({ schedule });
 };
 
 export const saveSchedlue = async (req: Request, resp: Response) => {

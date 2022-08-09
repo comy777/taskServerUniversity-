@@ -28,8 +28,44 @@ const Schedlue_1 = __importDefault(require("../models/Schedlue"));
 const getSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const query = { user };
-    const data = yield Schedlue_1.default.find(query).sort({ day: 1 });
-    return resp.send({ schedlue: data });
+    const data = yield Schedlue_1.default.find(query);
+    const arr = [];
+    data.forEach((item, i) => {
+        if (item.day === "LUNES") {
+            arr[i] = { item, index: 0 };
+            return;
+        }
+        if (item.day === "MARTES") {
+            arr[i] = { item, index: 1 };
+            return;
+        }
+        if (item.day === "MIERCOLES") {
+            arr[i] = { item, index: 2 };
+            return;
+        }
+        if (item.day === "JUEVES") {
+            arr[i] = { item, index: 3 };
+            return;
+        }
+        if (item.day === "VIERNES") {
+            arr[i] = { item, index: 4 };
+            return;
+        }
+        if (item.day === "SABADO") {
+            arr[i] = { item, index: 5 };
+            return;
+        }
+    });
+    const orden = arr.sort((a, b) => {
+        if (a.index < b.index)
+            return -1;
+        return 1;
+    });
+    const schedule = orden.map((item) => {
+        const { index } = item, data = __rest(item, ["index"]);
+        return data;
+    });
+    return resp.send({ schedule });
 });
 exports.getSchedlue = getSchedlue;
 const saveSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
