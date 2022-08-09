@@ -61,9 +61,10 @@ const getSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
             return -1;
         return 1;
     });
-    const schedlue = orden.map((item) => {
-        const { index } = item, data = __rest(item, ["index"]);
-        return data;
+    const schedlue = orden.map((data) => {
+        const { item } = data;
+        const { _id, day, schedlue } = item;
+        return { _id, day, schedlue };
     });
     return resp.send({ schedlue });
 });

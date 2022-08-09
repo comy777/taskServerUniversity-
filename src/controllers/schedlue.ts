@@ -37,9 +37,10 @@ export const getSchedlue = async (req: Request, resp: Response) => {
     if (a.index < b.index) return -1;
     return 1;
   });
-  const schedlue = orden.map((item) => {
-    const { index, ...data } = item;
-    return data;
+  const schedlue = orden.map((data) => {
+    const { item } = data;
+    const { _id, day, schedlue } = item;
+    return { _id, day, schedlue };
   });
   return resp.send({ schedlue });
 };
