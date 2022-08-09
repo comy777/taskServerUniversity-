@@ -61,11 +61,11 @@ const getSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
             return -1;
         return 1;
     });
-    const schedule = orden.map((item) => {
+    const schedlue = orden.map((item) => {
         const { index } = item, data = __rest(item, ["index"]);
         return data;
     });
-    return resp.send({ schedule });
+    return resp.send({ schedlue });
 });
 exports.getSchedlue = getSchedlue;
 const saveSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {

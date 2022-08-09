@@ -37,11 +37,11 @@ export const getSchedlue = async (req: Request, resp: Response) => {
     if (a.index < b.index) return -1;
     return 1;
   });
-  const schedule = orden.map((item) => {
+  const schedlue = orden.map((item) => {
     const { index, ...data } = item;
     return data;
   });
-  return resp.send({ schedule });
+  return resp.send({ schedlue });
 };
 
 export const saveSchedlue = async (req: Request, resp: Response) => {
