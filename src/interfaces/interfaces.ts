@@ -12,11 +12,11 @@ export interface ImageCloudinary {
 export interface ScheduleResponse {
   day: string;
   schedlue: string[];
-  classroom: string;
   _id: string;
 }
 
 export interface LessonResponse {
+  _id: string;
   lesson: string;
   nrc: string;
   teacher: string;
@@ -25,7 +25,16 @@ export interface LessonResponse {
   user: string;
 }
 
-interface Schedule {
+export interface LessonSave {
+  lesson: string;
+  nrc: string;
+  teacher: string;
+  schedlue: Schedule[];
+  classroom: string;
+  user: string;
+}
+
+export interface Schedule {
   day: string;
   hours: string;
 }

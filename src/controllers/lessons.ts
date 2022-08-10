@@ -1,7 +1,8 @@
 import { Response, Request } from "express";
 import Lesson from "../models/Lesson";
 import Schedlue from "../models/Schedlue";
-import { ScheduleResponse, LessonResponse } from "../interfaces/interfaces";
+import { LessonResponse } from "../interfaces/interfaces";
+import { deleteSchedlueLesson, saveSchedlueLesson } from "../utils/upload";
 
 export const getLessons = async (req: Request, res: Response) => {
   const user = req.user;
@@ -30,7 +31,9 @@ export const saveLesson = async (req: Request, res: Response) => {
   const lesson = new Lesson(req.body);
   lesson.user = id;
   try {
-    await lesson.save();
+    const data: LessonResponse = await lesson.save();
+    const { schedlue } = data;
+    await saveSchedlueLesson(schedlue, id);
     return res.send({ lesson });
   } catch (error) {
     console.log(error);
@@ -40,7 +43,8 @@ export const saveLesson = async (req: Request, res: Response) => {
 export const editLesson = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.user;
-  const lesson = await Lesson.findById(id);
+  const lesson: LessonResponse | null =
+    await Lesson.findById<LessonResponse | null>(id);
   if (!lesson) return res.send({ error: "La clase no existe" });
   if (lesson.user.toString() !== user)
     return res.send({ error: "No puede modificar esta clase" });
@@ -48,6 +52,17 @@ export const editLesson = async (req: Request, res: Response) => {
     const resp = await Lesson.findOneAndUpdate({ _id: id }, req.body, {
       new: true,
     });
+    const { schedlue } = req.body;
+    if (schedlue.length === 0) {
+      if (lesson.schedlue.length > 0) {
+        await deleteSchedlueLesson(lesson.schedlue, user);
+      }
+    } else {
+      if (schedlue.length < lesson.schedlue.length) {
+        await deleteSchedlueLesson(lesson.schedlue, user);
+      }
+      await saveSchedlueLesson(schedlue, user);
+    }
     return res.send({ lesson: resp });
   } catch (error) {
     console.log(error);
@@ -63,20 +78,7 @@ export const deleteLesson = async (req: Request, res: Response) => {
   if (lesson.user.toString() !== user)
     return res.send({ error: "No puede modificar esta clase" });
   const { schedlue } = lesson;
-  const query = { user };
-  const data = await Schedlue.find<ScheduleResponse>(query);
-  data.forEach((item) => {
-    schedlue.forEach(async (j) => {
-      if (item.day === j.day.toUpperCase()) {
-        const { hours } = j;
-        const { schedlue, _id } = item;
-        if (schedlue.includes(hours)) {
-          const resp = schedlue.filter((i) => i !== hours);
-          await Schedlue.findByIdAndUpdate(_id, { schedlue: resp });
-        }
-      }
-    });
-  });
+  await deleteSchedlueLesson(schedlue, user);
   try {
     await Lesson.findOneAndUpdate({ _id: id }, { state: false });
     return res.send({ msg: "Clase eliminada" });

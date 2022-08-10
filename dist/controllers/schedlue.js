@@ -25,47 +25,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteSchedlue = exports.updateSchedlue = exports.saveSchedlue = exports.getSchedlue = void 0;
 const Schedlue_1 = __importDefault(require("../models/Schedlue"));
+const upload_1 = require("../utils/upload");
 const getSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const query = { user };
     const data = yield Schedlue_1.default.find(query);
-    const arr = [];
-    data.forEach((item, i) => {
-        if (item.day === "LUNES") {
-            arr[i] = { item, index: 0 };
-            return;
-        }
-        if (item.day === "MARTES") {
-            arr[i] = { item, index: 1 };
-            return;
-        }
-        if (item.day === "MIERCOLES") {
-            arr[i] = { item, index: 2 };
-            return;
-        }
-        if (item.day === "JUEVES") {
-            arr[i] = { item, index: 3 };
-            return;
-        }
-        if (item.day === "VIERNES") {
-            arr[i] = { item, index: 4 };
-            return;
-        }
-        if (item.day === "SABADO") {
-            arr[i] = { item, index: 5 };
-            return;
-        }
-    });
-    const orden = arr.sort((a, b) => {
-        if (a.index < b.index)
-            return -1;
-        return 1;
-    });
-    const schedlue = orden.map((data) => {
-        const { item } = data;
-        const { _id, day, schedlue } = item;
-        return { _id, day, schedlue };
-    });
+    const schedlue = yield (0, upload_1.orderSchedule)(data, user);
     return resp.send({ schedlue });
 });
 exports.getSchedlue = getSchedlue;
@@ -98,11 +63,16 @@ const updateSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function
         return resp.send({ error: "El dia no se encuentra registrado" });
     if (schedlueData.user.toString() !== user) {
         return resp.send({
-            error: "No tiene permisos para eliminar este horario",
+            error: "No tiene permisos para actualizar este horario",
         });
     }
     try {
         const dataSave = yield Schedlue_1.default.findByIdAndUpdate(id, data, { new: true });
+        if (dataSave.schedlue.length === 0) {
+            const { _id } = dataSave;
+            yield Schedlue_1.default.findByIdAndDelete(_id);
+            return resp.send({ schedlue: [] });
+        }
         return resp.send({ schedlue: dataSave });
     }
     catch (error) {

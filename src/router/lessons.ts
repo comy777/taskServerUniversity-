@@ -18,6 +18,7 @@ lessonsRouter.post(
   [
     validateToken,
     check("lesson", "Nombre de la clase requerdido").notEmpty(),
+    check("schedlue", "El horario es requerido").notEmpty(),
     validate,
   ],
   saveLesson

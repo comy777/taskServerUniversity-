@@ -10,6 +10,7 @@ lessonsRouter.get("/", [jwt_1.validateToken], lessons_1.getLessons);
 lessonsRouter.post("/", [
     jwt_1.validateToken,
     (0, express_validator_1.check)("lesson", "Nombre de la clase requerdido").notEmpty(),
+    (0, express_validator_1.check)("schedlue", "El horario es requerido").notEmpty(),
     validate_1.validate,
 ], lessons_1.saveLesson);
 lessonsRouter.put("/:id", [

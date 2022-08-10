@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteLesson = exports.editLesson = exports.saveLesson = exports.getLessons = void 0;
 const Lesson_1 = __importDefault(require("../models/Lesson"));
 const Schedlue_1 = __importDefault(require("../models/Schedlue"));
+const upload_1 = require("../utils/upload");
 const getLessons = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const query = { user, state: true };
@@ -44,7 +45,9 @@ const saveLesson = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const lesson = new Lesson_1.default(req.body);
     lesson.user = id;
     try {
-        yield lesson.save();
+        const data = yield lesson.save();
+        const { schedlue } = data;
+        yield (0, upload_1.saveSchedlueLesson)(schedlue, id);
         return res.send({ lesson });
     }
     catch (error) {
@@ -64,6 +67,18 @@ const editLesson = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const resp = yield Lesson_1.default.findOneAndUpdate({ _id: id }, req.body, {
             new: true,
         });
+        const { schedlue } = req.body;
+        if (schedlue.length === 0) {
+            if (lesson.schedlue.length > 0) {
+                yield (0, upload_1.deleteSchedlueLesson)(lesson.schedlue, user);
+            }
+        }
+        else {
+            if (schedlue.length < lesson.schedlue.length) {
+                yield (0, upload_1.deleteSchedlueLesson)(lesson.schedlue, user);
+            }
+            yield (0, upload_1.saveSchedlueLesson)(schedlue, user);
+        }
         return res.send({ lesson: resp });
     }
     catch (error) {
@@ -81,20 +96,7 @@ const deleteLesson = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     if (lesson.user.toString() !== user)
         return res.send({ error: "No puede modificar esta clase" });
     const { schedlue } = lesson;
-    const query = { user };
-    const data = yield Schedlue_1.default.find(query);
-    data.forEach((item) => {
-        schedlue.forEach((j) => __awaiter(void 0, void 0, void 0, function* () {
-            if (item.day === j.day.toUpperCase()) {
-                const { hours } = j;
-                const { schedlue, _id } = item;
-                if (schedlue.includes(hours)) {
-                    const resp = schedlue.filter((i) => i !== hours);
-                    yield Schedlue_1.default.findByIdAndUpdate(_id, { schedlue: resp });
-                }
-            }
-        }));
-    });
+    yield (0, upload_1.deleteSchedlueLesson)(schedlue, user);
     try {
         yield Lesson_1.default.findOneAndUpdate({ _id: id }, { state: false });
         return res.send({ msg: "Clase eliminada" });
