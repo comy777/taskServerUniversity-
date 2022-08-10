@@ -26,10 +26,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteSchedlue = exports.updateSchedlue = exports.saveSchedlue = exports.getSchedlue = void 0;
 const Schedlue_1 = __importDefault(require("../models/Schedlue"));
 const upload_1 = require("../utils/upload");
+const Lesson_1 = __importDefault(require("../models/Lesson"));
 const getSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const query = { user };
     const data = yield Schedlue_1.default.find(query);
+    if (data.length === 0) {
+        const lessons = yield Lesson_1.default.find({ user, state: true });
+        if (lessons.length > 0) {
+            lessons.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
+                const { schedlue } = item;
+                yield (0, upload_1.saveSchedlueLesson)(schedlue, user);
+            }));
+            const data = yield Schedlue_1.default.find({ user });
+            const schedlue = yield (0, upload_1.orderSchedule)(data, user);
+            return resp.send({ schedlue });
+        }
+    }
     const schedlue = yield (0, upload_1.orderSchedule)(data, user);
     return resp.send({ schedlue });
 });

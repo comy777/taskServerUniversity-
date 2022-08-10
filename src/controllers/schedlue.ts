@@ -1,12 +1,25 @@
 import { Request, Response } from "express";
 import Schedlue from "../models/Schedlue";
 import { ScheduleResponse } from "../interfaces/interfaces";
-import { orderSchedule } from "../utils/upload";
+import { orderSchedule, saveSchedlueLesson } from "../utils/upload";
+import Lesson from "../models/Lesson";
 
 export const getSchedlue = async (req: Request, resp: Response) => {
   const user = req.user;
   const query = { user };
   const data = await Schedlue.find<ScheduleResponse>(query);
+  if (data.length === 0) {
+    const lessons = await Lesson.find({ user, state: true });
+    if (lessons.length > 0) {
+      lessons.forEach(async (item) => {
+        const { schedlue } = item;
+        await saveSchedlueLesson(schedlue, user);
+      });
+      const data = await Schedlue.find({ user });
+      const schedlue = await orderSchedule(data, user);
+      return resp.send({ schedlue });
+    }
+  }
   const schedlue = await orderSchedule(data, user);
   return resp.send({ schedlue });
 };
