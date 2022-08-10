@@ -42,9 +42,14 @@ const getSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
             const schedlue = yield (0, upload_1.orderSchedule)(data, user);
             return resp.send({ schedlue });
         }
+        else {
+            return resp.send({ schedlue: [] });
+        }
     }
-    const schedlue = yield (0, upload_1.orderSchedule)(data, user);
-    return resp.send({ schedlue });
+    else {
+        const schedlue = yield (0, upload_1.orderSchedule)(data, user);
+        return resp.send({ schedlue });
+    }
 });
 exports.getSchedlue = getSchedlue;
 const saveSchedlue = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {

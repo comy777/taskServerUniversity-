@@ -18,10 +18,13 @@ export const getSchedlue = async (req: Request, resp: Response) => {
       const data = await Schedlue.find({ user });
       const schedlue = await orderSchedule(data, user);
       return resp.send({ schedlue });
+    } else {
+      return resp.send({ schedlue: [] });
     }
+  } else {
+    const schedlue = await orderSchedule(data, user);
+    return resp.send({ schedlue });
   }
-  const schedlue = await orderSchedule(data, user);
-  return resp.send({ schedlue });
 };
 
 export const saveSchedlue = async (req: Request, resp: Response) => {

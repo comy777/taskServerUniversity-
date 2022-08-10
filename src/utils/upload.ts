@@ -1,6 +1,5 @@
 import cloudinary from "cloudinary";
 import { Schedule, ScheduleResponse } from "../interfaces/interfaces";
-import Schedlue from "../models/Schedlue";
 import SchedlueModel from "../models/Schedlue";
 cloudinary.v2.config(process.env.CLOUDINARY_URL);
 
@@ -68,6 +67,10 @@ export const deleteSchedlueLesson = async (
         const { schedlue, _id } = item;
         if (schedlue.includes(hours)) {
           const resp = schedlue.filter((i) => i !== hours);
+          if (resp.length === 0) {
+            await SchedlueModel.findByIdAndDelete(_id);
+            return;
+          }
           await SchedlueModel.findByIdAndUpdate(_id, { schedlue: resp });
         }
       }
@@ -80,25 +83,25 @@ export const orderSchedule = async (
   user: string
 ): Promise<ScheduleResponse[]> => {
   let bandera = false;
+  let arr: Props[] = [];
   data.forEach(async (item) => {
     const { _id, schedlue } = item;
     if (schedlue) {
       if (schedlue.length === 0) {
-        await Schedlue.findByIdAndDelete(_id);
+        await SchedlueModel.findByIdAndDelete(_id);
         bandera = true;
       }
     }
   });
-  let arr: Props[] = [];
   if (bandera) {
-    const dataApi = await Schedlue.find<ScheduleResponse>({ user });
+    const dataApi = await SchedlueModel.find<ScheduleResponse>({ user });
     const dataNew = dataSchedule(dataApi);
     arr = dataNew;
   } else {
     const dataNew = dataSchedule(data);
     arr = dataNew;
   }
-  const orden = arr.sort((a, b) => {
+  const orden = arr.sort((a: Props, b: Props) => {
     if (a.index < b.index) return -1;
     return 1;
   });

@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.orderSchedule = exports.deleteSchedlueLesson = exports.saveSchedlueLesson = exports.deleteImage = exports.uploadImageCloudinary = void 0;
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const Schedlue_1 = __importDefault(require("../models/Schedlue"));
-const Schedlue_2 = __importDefault(require("../models/Schedlue"));
 cloudinary_1.default.v2.config(process.env.CLOUDINARY_URL);
 const uploadImageCloudinary = (image) => __awaiter(void 0, void 0, void 0, function* () {
     const extensionsValid = ["png", "jpg", "jpeg"];
@@ -47,18 +46,18 @@ const saveSchedlueLesson = (schedlue, user) => __awaiter(void 0, void 0, void 0,
     schedlue.forEach((item, i) => __awaiter(void 0, void 0, void 0, function* () {
         const { day, hours } = item;
         const query = { user, day };
-        const dataSchedule = yield Schedlue_2.default.find(query);
+        const dataSchedule = yield Schedlue_1.default.find(query);
         if (dataSchedule.length > 0) {
             const { _id, schedlue } = dataSchedule[0];
             if (schedlue.includes(hours))
                 return;
-            yield Schedlue_2.default.findByIdAndUpdate(_id, {
+            yield Schedlue_1.default.findByIdAndUpdate(_id, {
                 day,
                 schedlue: [...schedlue, hours],
             });
         }
         else {
-            const saveSchedlue = new Schedlue_2.default({ day, schedlue: hours, user });
+            const saveSchedlue = new Schedlue_1.default({ day, schedlue: hours, user });
             yield saveSchedlue.save();
         }
     }));
@@ -66,7 +65,7 @@ const saveSchedlueLesson = (schedlue, user) => __awaiter(void 0, void 0, void 0,
 exports.saveSchedlueLesson = saveSchedlueLesson;
 const deleteSchedlueLesson = (schedlue, user) => __awaiter(void 0, void 0, void 0, function* () {
     const query = { user };
-    const data = yield Schedlue_2.default.find(query);
+    const data = yield Schedlue_1.default.find(query);
     data.forEach((item) => {
         schedlue.forEach((j) => __awaiter(void 0, void 0, void 0, function* () {
             if (item.day === j.day.toUpperCase()) {
@@ -74,7 +73,11 @@ const deleteSchedlueLesson = (schedlue, user) => __awaiter(void 0, void 0, void 
                 const { schedlue, _id } = item;
                 if (schedlue.includes(hours)) {
                     const resp = schedlue.filter((i) => i !== hours);
-                    yield Schedlue_2.default.findByIdAndUpdate(_id, { schedlue: resp });
+                    if (resp.length === 0) {
+                        yield Schedlue_1.default.findByIdAndDelete(_id);
+                        return;
+                    }
+                    yield Schedlue_1.default.findByIdAndUpdate(_id, { schedlue: resp });
                 }
             }
         }));
@@ -83,6 +86,7 @@ const deleteSchedlueLesson = (schedlue, user) => __awaiter(void 0, void 0, void 
 exports.deleteSchedlueLesson = deleteSchedlueLesson;
 const orderSchedule = (data, user) => __awaiter(void 0, void 0, void 0, function* () {
     let bandera = false;
+    let arr = [];
     data.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
         const { _id, schedlue } = item;
         if (schedlue) {
@@ -92,7 +96,6 @@ const orderSchedule = (data, user) => __awaiter(void 0, void 0, void 0, function
             }
         }
     }));
-    let arr = [];
     if (bandera) {
         const dataApi = yield Schedlue_1.default.find({ user });
         const dataNew = dataSchedule(dataApi);
