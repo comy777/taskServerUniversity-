@@ -19,7 +19,9 @@ export const sendVerification = async (email: string, token: string) => {
       <b>Please click on the following link, or paste this into your browser to complete the process:</b>
       <hr/>
       <br/>
-      <a href="http://localhost:5050/auth/validate-email/${token}" >Verificar correo electronico</a>
+      <a href="https://task-university.herokuapp.com/auth/validate-email/${token}" >
+        Verificar correo electronico
+      </a>
     `,
   });
 };
