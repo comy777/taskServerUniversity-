@@ -1,8 +1,22 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User";
-import { generateToken } from "../jwt/jwt";
+import { User as UserInterface } from "../interfaces/interfaces";
+import { generateToken, validateTokenAuth } from "../jwt/jwt";
 import { deleteImage } from "../utils/upload";
+import { sendVerification } from "../config/mailer";
+
+const tokenUser = async (user: UserInterface, email: string, res: Response) => {
+  let expiresIn = "7d";
+  let token = "";
+  if (!user.verify) {
+    token = generateToken(user, "10m");
+    await sendVerification(email, token);
+    return res.send({ msg: "Validar el correo electronico" });
+  }
+  if (user.verify) token = generateToken(user, expiresIn);
+  return res.send({ token });
+};
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -13,8 +27,7 @@ export const login = async (req: Request, res: Response) => {
   if (!validatePassword)
     return res.send({ error: "El correo y la contraseña no coinciden" });
   //Token
-  const token = generateToken(user);
-  return res.send({ token });
+  await tokenUser(user, email, res);
 };
 
 export const register = async (req: Request, res: Response) => {
@@ -26,8 +39,7 @@ export const register = async (req: Request, res: Response) => {
     const salt = bcrypt.genSaltSync();
     user.password = bcrypt.hashSync(password, salt);
     await user.save();
-    const token = generateToken(user);
-    return res.send({ token });
+    await tokenUser(user, email, res);
   } catch (error) {
     console.log(error);
     return res.send({ error: "Error del servidor" });
@@ -62,5 +74,21 @@ export const setProfile = async (req: Request, res: Response) => {
     return res.send({ user: resp });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const validateEmail = async (req: Request, resp: Response) => {
+  const { token } = req.params;
+  const email = validateTokenAuth(token);
+  if (!email) return resp.send({ error: "Token expired" });
+  const user = await User.findOne({ email });
+  if (!user) return resp.send({ error: "Usuario no registrado" });
+  if (user.verify) return resp.redirect("/validate-email.html");
+  try {
+    await User.findByIdAndUpdate(user._id, { verify: true });
+    return resp.redirect("/user-verify.html");
+  } catch (error) {
+    console.log(error);
+    return resp.send({ error: "Error del servidor" });
   }
 };

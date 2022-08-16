@@ -12,15 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refreshToken = exports.validateToken = exports.generateToken = void 0;
+exports.validateTokenAuth = exports.refreshToken = exports.validateToken = exports.generateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
 const User_2 = __importDefault(require("../models/User"));
-const generateToken = (user) => {
+const generateToken = (user, expiresIn) => {
     const payload = { id: user._id, email: user.email };
     try {
         return jsonwebtoken_1.default.sign(payload, process.env.SECRET_KEY, {
-            expiresIn: "7d",
+            expiresIn,
         });
     }
     catch (error) {
@@ -55,7 +55,18 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.default.findById(id);
     if (!user)
         return "Error";
-    const dataToken = (0, exports.generateToken)(user);
+    const dataToken = (0, exports.generateToken)(user, "7d");
     return dataToken;
 });
 exports.refreshToken = refreshToken;
+const validateTokenAuth = (token) => {
+    try {
+        const payload = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY);
+        const { email } = payload;
+        return email;
+    }
+    catch (error) {
+        return null;
+    }
+};
+exports.validateTokenAuth = validateTokenAuth;

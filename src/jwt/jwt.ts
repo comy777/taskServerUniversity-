@@ -4,11 +4,14 @@ import { User as UserInterface } from "../interfaces/interfaces";
 import User from "../models/User";
 import UserSchema from "../models/User";
 
-export const generateToken = (user: UserInterface): string => {
+export const generateToken = (
+  user: UserInterface,
+  expiresIn: string
+): string => {
   const payload = { id: user._id, email: user.email };
   try {
     return jwt.sign(payload, process.env.SECRET_KEY, {
-      expiresIn: "7d",
+      expiresIn,
     });
   } catch (error) {
     console.log(error);
@@ -43,6 +46,16 @@ export const refreshToken = async (token: string) => {
   const { id } = userToken;
   const user = await User.findById(id);
   if (!user) return "Error";
-  const dataToken: string = generateToken(user);
+  const dataToken: string = generateToken(user, "7d");
   return dataToken;
+};
+
+export const validateTokenAuth = (token: string): string | null => {
+  try {
+    const payload: any = jwt.verify(token, process.env.SECRET_KEY);
+    const { email } = payload;
+    return email;
+  } catch (error) {
+    return null;
+  }
 };

@@ -1,6 +1,12 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { login, register, setProfile, getUser } from "../controllers/auth";
+import {
+  login,
+  register,
+  setProfile,
+  getUser,
+  validateEmail,
+} from "../controllers/auth";
 import { validateToken } from "../jwt/jwt";
 import { validate } from "../middlewares/validate";
 
@@ -29,6 +35,12 @@ authRouter.post(
     validate,
   ],
   register
+);
+
+authRouter.get(
+  "/validate-email/:token",
+  [check("token", "Token requerido").notEmpty(), validate],
+  validateEmail
 );
 
 authRouter.get("/", [validateToken], getUser);

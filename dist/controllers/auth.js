@@ -12,11 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setProfile = exports.getUser = exports.register = exports.login = void 0;
+exports.validateEmail = exports.setProfile = exports.getUser = exports.register = exports.login = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const User_1 = __importDefault(require("../models/User"));
 const jwt_1 = require("../jwt/jwt");
 const upload_1 = require("../utils/upload");
+const mailer_1 = require("../config/mailer");
+const tokenUser = (user, email, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let expiresIn = "7d";
+    let token = "";
+    if (!user.verify) {
+        token = (0, jwt_1.generateToken)(user, "10m");
+        yield (0, mailer_1.sendVerification)(email, token);
+        return res.send({ msg: "Validar el correo electronico" });
+    }
+    if (user.verify)
+        token = (0, jwt_1.generateToken)(user, expiresIn);
+    return res.send({ token });
+});
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     const user = yield User_1.default.findOne({ email });
@@ -26,8 +39,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!validatePassword)
         return res.send({ error: "El correo y la contraseña no coinciden" });
     //Token
-    const token = (0, jwt_1.generateToken)(user);
-    return res.send({ token });
+    yield tokenUser(user, email, res);
 });
 exports.login = login;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -40,8 +52,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const salt = bcryptjs_1.default.genSaltSync();
         user.password = bcryptjs_1.default.hashSync(password, salt);
         yield user.save();
-        const token = (0, jwt_1.generateToken)(user);
-        return res.send({ token });
+        yield tokenUser(user, email, res);
     }
     catch (error) {
         console.log(error);
@@ -84,3 +95,23 @@ const setProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.setProfile = setProfile;
+const validateEmail = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
+    const email = (0, jwt_1.validateTokenAuth)(token);
+    if (!email)
+        return resp.send({ error: "Token expired" });
+    const user = yield User_1.default.findOne({ email });
+    if (!user)
+        return resp.send({ error: "Usuario no registrado" });
+    if (user.verify)
+        return resp.redirect("/validate-email.html");
+    try {
+        yield User_1.default.findByIdAndUpdate(user._id, { verify: true });
+        return resp.redirect("/user-verify.html");
+    }
+    catch (error) {
+        console.log(error);
+        return resp.send({ error: "Error del servidor" });
+    }
+});
+exports.validateEmail = validateEmail;

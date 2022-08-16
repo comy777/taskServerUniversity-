@@ -36,6 +36,10 @@ const UserSchema = new mongoose_1.Schema({
         type: String,
         default: "",
     },
+    verify: {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true });
 UserSchema.methods.toJSON = function () {
     const _a = this.toObject(), { __v, createdAt, updatedAt, password, state } = _a, data = __rest(_a, ["__v", "createdAt", "updatedAt", "password", "state"]);

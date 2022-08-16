@@ -21,6 +21,7 @@ authRouter.post("/register", [
     }),
     validate_1.validate,
 ], auth_1.register);
+authRouter.get("/validate-email/:token", [(0, express_validator_1.check)("token", "Token requerido").notEmpty(), validate_1.validate], auth_1.validateEmail);
 authRouter.get("/", [jwt_1.validateToken], auth_1.getUser);
 authRouter.put("/", [jwt_1.validateToken], auth_1.setProfile);
 exports.default = authRouter;

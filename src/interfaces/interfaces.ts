@@ -2,6 +2,7 @@ export interface User {
   _id: string;
   email: string;
   image?: string;
+  verify: boolean;
 }
 
 export interface ImageCloudinary {

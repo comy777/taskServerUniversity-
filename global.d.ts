@@ -6,6 +6,7 @@ namespace NodeJS {
     SECRET_KEY: string;
     CLOUDINARY_URL: string;
     UPLOAD_PRESET: string;
+    PASSWORD_EMAIL: string;
   }
 }
 
