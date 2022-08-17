@@ -34,7 +34,7 @@ const sendVerification = (email, token) => __awaiter(void 0, void 0, void 0, fun
       <b>Please click on the following link, or paste this into your browser to complete the process:</b>
       <hr/>
       <br/>
-      <a href="${urlLocal}" >
+      <a href="${url}" >
         Verificar correo electronico
       </a>
     `,
@@ -52,7 +52,7 @@ const sendEmailPassword = (email, token) => __awaiter(void 0, void 0, void 0, fu
       <b>Please click on the following link, or paste this into your browser to complete the process:</b>
       <hr/>
       <br/>
-      <a href="${urlLocal}" >
+      <a href="${url}" >
         Recuperar contraseña      
       </a>
     `,
