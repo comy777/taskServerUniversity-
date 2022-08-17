@@ -50,12 +50,27 @@ export const refreshToken = async (token: string) => {
   return dataToken;
 };
 
-export const validateTokenAuth = (token: string): string | null => {
+export const validateTokenAuth = (token: string): any => {
   try {
     const payload: any = jwt.verify(token, process.env.SECRET_KEY);
     const { email } = payload;
     return email;
   } catch (error) {
     return null;
+  }
+};
+
+export const validateTokenCheck = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  const { token } = req.params;
+  if (!token) return res.send({ error: "Token requerido" });
+  try {
+    jwt.verify(token, process.env.SECRET_KEY);
+    next();
+  } catch (error) {
+    return res.send({ error: "Token no valido" });
   }
 };

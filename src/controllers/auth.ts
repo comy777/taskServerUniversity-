@@ -4,7 +4,7 @@ import User from "../models/User";
 import { User as UserInterface } from "../interfaces/interfaces";
 import { generateToken, validateTokenAuth } from "../jwt/jwt";
 import { deleteImage } from "../utils/upload";
-import { sendVerification } from "../config/mailer";
+import { sendVerification, sendEmailPassword } from "../config/mailer";
 
 const tokenUser = async (user: UserInterface, email: string, res: Response) => {
   let expiresIn = "7d";
@@ -12,7 +12,7 @@ const tokenUser = async (user: UserInterface, email: string, res: Response) => {
   if (!user.verify) {
     token = generateToken(user, "10m");
     await sendVerification(email, token);
-    return res.send({ msg: "Validar el correo electronico" });
+    return res.send({ msg: "Revise su bandeja de correo electronico" });
   }
   if (user.verify) token = generateToken(user, expiresIn);
   return res.send({ token });
@@ -80,15 +80,63 @@ export const setProfile = async (req: Request, res: Response) => {
 export const validateEmail = async (req: Request, resp: Response) => {
   const { token } = req.params;
   const email = validateTokenAuth(token);
-  if (!email) return resp.send({ error: "Token expired" });
+  if (!email) return resp.redirect(`/validate-email.html?auth=${token}`);
   const user = await User.findOne({ email });
   if (!user) return resp.send({ error: "Usuario no registrado" });
-  if (user.verify) return resp.redirect("/validate-email.html");
+  if (user.verify) return resp.redirect(`/validate-email.html?auth=${token}`);
   try {
     await User.findByIdAndUpdate(user._id, { verify: true });
-    return resp.redirect("/user-verify.html");
+    return resp.redirect(`/user-verify.html?auth=${token}`);
   } catch (error) {
     console.log(error);
     return resp.send({ error: "Error del servidor" });
+  }
+};
+
+export const userVerify = (req: Request, res: Response) => {
+  const { token } = req.params;
+  const validateToken = validateTokenAuth(token);
+  if (validateToken) return res.send({ msg: "verify" });
+  return res.send({ msg: null });
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.send({ error: "Usuario no registrado" });
+  if (user.verify) return res.send({ msg: "Correo electronico ya verificado" });
+  await tokenUser(user, email, res);
+};
+
+export const forgetPassword = async (req: Request, res: Response) => {
+  const email = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.send({ error: "Usuario no registrado" });
+  const token = generateToken(user, "10m");
+  await sendEmailPassword(email, token);
+  return res.send({ msg: "Revise su bandeja de correo electronico" });
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const email = validateTokenAuth(token);
+  const user = await User.findOne({ email });
+  if (!user) return res.send({ error: "Usuario no registrado" });
+  const { password, newPassword } = req.body;
+  const validatePassword = bcrypt.compareSync(password, user.password);
+  if (!validatePassword) return res.send({ error: "Contraseña no valida" });
+  try {
+    const salt = bcrypt.genSaltSync();
+    const hashPassword = bcrypt.hashSync(newPassword, salt);
+    const data = await User.findByIdAndUpdate(
+      user._id,
+      { password: hashPassword },
+      { new: true }
+    );
+    console.log(data);
+    return res.send({ msg: "Contraseña actualizada exitosamente" });
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: "Error del servidor" });
   }
 };

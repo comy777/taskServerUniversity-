@@ -7,8 +7,14 @@ import {
   getUser,
   validateEmail,
 } from "../controllers/auth";
-import { validateToken } from "../jwt/jwt";
+import { validateToken, validateTokenCheck } from "../jwt/jwt";
 import { validate } from "../middlewares/validate";
+import {
+  userVerify,
+  verifyEmail,
+  resetPassword,
+  forgetPassword,
+} from "../controllers/auth";
 
 const authRouter = Router();
 
@@ -39,12 +45,57 @@ authRouter.post(
 
 authRouter.get(
   "/validate-email/:token",
-  [check("token", "Token requerido").notEmpty(), validate],
+  [check("token", "Token requerido").notEmpty(), validateTokenCheck],
   validateEmail
+);
+
+authRouter.get(
+  "/user-verify/:token",
+  [check("token", "Token requerido").notEmpty(), validateTokenCheck],
+  userVerify
 );
 
 authRouter.get("/", [validateToken], getUser);
 
 authRouter.put("/", [validateToken], setProfile);
+
+authRouter.post(
+  "/verify-email",
+  [
+    check("email", "Correo electronico requerido").notEmpty(),
+    check("email", "Correo electronico no valido").isEmail(),
+    validate,
+  ],
+  verifyEmail
+);
+
+authRouter.post(
+  "/forget-password",
+  [
+    check("email", "Correo electronico requerido").notEmpty(),
+    check("email", "Correo electronico no valido").isEmail(),
+    validate,
+  ],
+  forgetPassword
+);
+
+authRouter.put(
+  "/reset-password/:token",
+  [
+    check("token", "Token requerido"),
+    validateTokenCheck,
+    check("password", "La contraseña es requerida").notEmpty(),
+    check("password", "La contraseña debe tener mas de 8 caracteres").isLength({
+      min: 8,
+    }),
+    check("newPassword", "La contraseña nueva es requerida").notEmpty(),
+    check(
+      "newPassword",
+      "La contraseña debe tener mas de 8 caracteres"
+    ).isLength({ min: 8 }),
+    validate,
+  ],
+  resetPassword
+);
 
 export default authRouter;

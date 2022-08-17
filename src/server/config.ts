@@ -69,6 +69,7 @@ class Server {
         createParentPath: true,
       })
     );
+    this.app.use(express.urlencoded({ extended: false }));
   }
 
   private routes = () => {

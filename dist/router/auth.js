@@ -5,6 +5,7 @@ const express_validator_1 = require("express-validator");
 const auth_1 = require("../controllers/auth");
 const jwt_1 = require("../jwt/jwt");
 const validate_1 = require("../middlewares/validate");
+const auth_2 = require("../controllers/auth");
 const authRouter = (0, express_1.Router)();
 authRouter.post("/", [
     (0, express_validator_1.check)("email", "Correo electronico requerido").notEmpty(),
@@ -21,7 +22,29 @@ authRouter.post("/register", [
     }),
     validate_1.validate,
 ], auth_1.register);
-authRouter.get("/validate-email/:token", [(0, express_validator_1.check)("token", "Token requerido").notEmpty(), validate_1.validate], auth_1.validateEmail);
+authRouter.get("/validate-email/:token", [(0, express_validator_1.check)("token", "Token requerido").notEmpty(), jwt_1.validateTokenCheck], auth_1.validateEmail);
+authRouter.get("/user-verify/:token", [(0, express_validator_1.check)("token", "Token requerido").notEmpty(), jwt_1.validateTokenCheck], auth_2.userVerify);
 authRouter.get("/", [jwt_1.validateToken], auth_1.getUser);
 authRouter.put("/", [jwt_1.validateToken], auth_1.setProfile);
+authRouter.post("/verify-email", [
+    (0, express_validator_1.check)("email", "Correo electronico requerido").notEmpty(),
+    (0, express_validator_1.check)("email", "Correo electronico no valido").isEmail(),
+    validate_1.validate,
+], auth_2.verifyEmail);
+authRouter.post("/forget-password", [
+    (0, express_validator_1.check)("email", "Correo electronico requerido").notEmpty(),
+    (0, express_validator_1.check)("email", "Correo electronico no valido").isEmail(),
+    validate_1.validate,
+], auth_2.forgetPassword);
+authRouter.put("/reset-password/:token", [
+    (0, express_validator_1.check)("token", "Token requerido"),
+    jwt_1.validateTokenCheck,
+    (0, express_validator_1.check)("password", "La contraseña es requerida").notEmpty(),
+    (0, express_validator_1.check)("password", "La contraseña debe tener mas de 8 caracteres").isLength({
+        min: 8,
+    }),
+    (0, express_validator_1.check)("newPassword", "La contraseña nueva es requerida").notEmpty(),
+    (0, express_validator_1.check)("newPassword", "La contraseña debe tener mas de 8 caracteres").isLength({ min: 8 }),
+    validate_1.validate,
+], auth_2.resetPassword);
 exports.default = authRouter;

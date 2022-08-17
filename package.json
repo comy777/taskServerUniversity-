@@ -27,7 +27,7 @@
     "copyfiles": "^2.4.1"
   },
   "scripts": {
-    "html": "copyfiles --up 1 src/public/*html dist",
+    "html": "copyfiles --up 1 src/public/* dist",
     "build": "tsc && npm run html",
     "dev": "nodemon dist/index",
     "start": "node dist/index.js",

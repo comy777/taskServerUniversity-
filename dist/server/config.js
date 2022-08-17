@@ -71,6 +71,7 @@ class Server {
             tempFileDir: "/tmp/",
             createParentPath: true,
         }));
+        this.app.use(express_1.default.urlencoded({ extended: false }));
     }
 }
 exports.default = Server;

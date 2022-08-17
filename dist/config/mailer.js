@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendVerification = exports.transporter = void 0;
+exports.sendEmailPassword = exports.sendVerification = exports.transporter = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 exports.transporter = nodemailer_1.default.createTransport({
     host: "smtp.gmail.com",
@@ -24,6 +24,8 @@ exports.transporter = nodemailer_1.default.createTransport({
     },
 });
 const sendVerification = (email, token) => __awaiter(void 0, void 0, void 0, function* () {
+    const urlLocal = `http://localhost:5050/auth/validate-email/${token}`;
+    const url = `https://task-university.herokuapp.com/auth/validate-email/${token}`;
     return yield exports.transporter.sendMail({
         from: '"Fred Foo 👻" <taskserveruniversity@gmail.com>',
         to: email,
@@ -32,8 +34,28 @@ const sendVerification = (email, token) => __awaiter(void 0, void 0, void 0, fun
       <b>Please click on the following link, or paste this into your browser to complete the process:</b>
       <hr/>
       <br/>
-      <a href="http://localhost:5050/auth/validate-email/${token}" >Verificar correo electronico</a>
+      <a href="${urlLocal}" >
+        Verificar correo electronico
+      </a>
     `,
     });
 });
 exports.sendVerification = sendVerification;
+const sendEmailPassword = (email, token) => __awaiter(void 0, void 0, void 0, function* () {
+    const urlLocal = `http://localhost:5050/auth/reset-password/${token}`;
+    const url = `https://task-university.herokuapp.com/auth/reset-password/${token}`;
+    return yield exports.transporter.sendMail({
+        from: '"Fred Foo 👻" <taskserveruniversity@gmail.com>',
+        to: email,
+        subject: "Recuperar contraseña",
+        html: `
+      <b>Please click on the following link, or paste this into your browser to complete the process:</b>
+      <hr/>
+      <br/>
+      <a href="${urlLocal}" >
+        Recuperar contraseña      
+      </a>
+    `,
+    });
+});
+exports.sendEmailPassword = sendEmailPassword;

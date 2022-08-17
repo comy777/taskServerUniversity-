@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+.header {
+  height: 70px;
+  background-color: #8bc34a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 28;
+  font-weight: bold;
+}
