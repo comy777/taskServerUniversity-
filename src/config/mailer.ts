@@ -21,7 +21,7 @@ export const sendVerification = async (email: string, token: string) => {
       <b>Please click on the following link, or paste this into your browser to complete the process:</b>
       <hr/>
       <br/>
-      <a href="${urlLocal}" >
+      <a href="${url}" >
         Verificar correo electronico
       </a>
     `,
@@ -39,7 +39,7 @@ export const sendEmailPassword = async (email: string, token: string) => {
       <b>Please click on the following link, or paste this into your browser to complete the process:</b>
       <hr/>
       <br/>
-      <a href="${urlLocal}" >
+      <a href="${url}" >
         Recuperar contraseña      
       </a>
     `,
