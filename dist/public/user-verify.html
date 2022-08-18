@@ -15,7 +15,7 @@
           title: "Correo electronico confirmado",
           confirmButtonColor: "#8bc34a",
         }).then(() => {
-          location.replace("http://localhost:5050/");
+          location.replace("https://task-university.herokuapp.com/");
         });
       }
       window.onload = () => {
@@ -23,10 +23,14 @@
         if (numeroDeEntradas >= 1) {
           const params = window.location.search;
           if (!params)
-            location.replace(`http://localhost:5050/validate-email.html`);
+            location.replace(
+              `https://task-university.herokuapp.com/validate-email.html`
+            );
           const paramsSplit = params.split("=");
           const token = paramsSplit[1];
-          fetch(`http://localhost:5050/auth/user-verify/${token}`, {
+          const urlLocal = `http://localhost:5050/auth/user-verify/${token}`;
+          const url = `https://task-university.herokuapp.com/auth/user-verify/${token}`;
+          fetch(url, {
             method: "GET",
           })
             .then((res) => res.json())

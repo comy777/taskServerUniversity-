@@ -44,8 +44,10 @@
       const msg = document.getElementById("msg");
       if (msg) msg.outerHTML = "";
       e.preventDefault();
+      const urlLocal = `http://localhost:5050/user-email`;
+      const url = `https://task-university.herokuapp.com/user-email`;
       const data = { email: emailData.value };
-      const json = await fetch("http://localhost:5050/auth/verify-email", {
+      const json = await fetch(url, {
         headers: { "content-type": "application/json" },
         method: "post",
         body: JSON.stringify(data),
