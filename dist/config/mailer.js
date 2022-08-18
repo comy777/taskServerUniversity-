@@ -42,8 +42,8 @@ const sendVerification = (email, token) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.sendVerification = sendVerification;
 const sendEmailPassword = (email, token) => __awaiter(void 0, void 0, void 0, function* () {
-    const urlLocal = `http://localhost:5050/auth/reset-password/${token}`;
-    const url = `https://task-university.herokuapp.com/auth/reset-password/${token}`;
+    const urlLocal = `http://localhost:5050/reset-password/${token}`;
+    const url = `https://task-university.herokuapp.com/reset-password/${token}`;
     return yield exports.transporter.sendMail({
         from: '"Fred Foo 👻" <taskserveruniversity@gmail.com>',
         to: email,
