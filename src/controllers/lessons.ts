@@ -20,20 +20,25 @@ export const getLessons = async (req: Request, res: Response) => {
 };
 
 export const saveLesson = async (req: Request, res: Response) => {
-  const id = req.user;
+  const user = req.user;
   const lessonName = await Lesson.findOne({
     lesson: req.body.lesson,
     state: true,
+    user,
   });
   if (lessonName) return res.send({ error: "La clase ya esta registrada" });
-  const lessonNrc = await Lesson.findOne({ nrc: req.body.nrc, state: true });
+  const lessonNrc = await Lesson.findOne({
+    nrc: req.body.nrc,
+    state: true,
+    user,
+  });
   if (lessonNrc) return res.send({ error: "La clase ya esta registrada" });
   const lesson = new Lesson(req.body);
-  lesson.user = id;
+  lesson.user = user;
   try {
     const data: LessonResponse = await lesson.save();
     const { schedlue } = data;
-    await saveSchedlueLesson(schedlue, id);
+    await saveSchedlueLesson(schedlue, user);
     return res.send({ lesson });
   } catch (error) {
     console.log(error);

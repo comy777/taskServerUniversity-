@@ -14,11 +14,11 @@ export const sendVerification = async (email: string, token: string) => {
   const urlLocal = `http://localhost:5050/auth/validate-email/${token}`;
   const url = `https://task-university.herokuapp.com/auth/validate-email/${token}`;
   return await transporter.sendMail({
-    from: '"Fred Foo 👻" <taskserveruniversity@gmail.com>',
+    from: '"Verify your email" <taskserveruniversity@gmail.com>',
     to: email,
     subject: "Validar correo electronico",
     html: `
-      <b>Please click on the following link, or paste this into your browser to complete the process:</b>
+      <b>Please click on the following link, to verify your email account:</b>
       <hr/>
       <br/>
       <a href="${url}" >
@@ -32,11 +32,11 @@ export const sendEmailPassword = async (email: string, token: string) => {
   const urlLocal = `http://localhost:5050/reset-password.html?token=${token}`;
   const url = `https://task-university.herokuapp.com/reset-password.html?token=${token}`;
   return await transporter.sendMail({
-    from: '"Fred Foo 👻" <taskserveruniversity@gmail.com>',
+    from: '"Reset Password" <taskserveruniversity@gmail.com>',
     to: email,
     subject: "Recuperar contraseña",
     html: `
-      <b>Please click on the following link, or paste this into your browser to complete the process:</b>
+      <b>Please click on the following link, to reset your password:</b>
       <hr/>
       <br/>
       <a href="${url}" >
