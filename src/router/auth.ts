@@ -79,7 +79,7 @@ authRouter.post(
   forgetPassword
 );
 
-authRouter.put(
+authRouter.get(
   "/reset-password/:token",
   [
     check("token", "Token requerido"),
