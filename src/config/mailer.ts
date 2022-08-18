@@ -29,8 +29,8 @@ export const sendVerification = async (email: string, token: string) => {
 };
 
 export const sendEmailPassword = async (email: string, token: string) => {
-  const urlLocal = `http://localhost:5050/reset-password/${token}`;
-  const url = `https://task-university.herokuapp.com/reset-password/${token}`;
+  const urlLocal = `http://localhost:5050/reset-password.html?token=${token}`;
+  const url = `https://task-university.herokuapp.com/reset-password.html?token=${token}`;
   return await transporter.sendMail({
     from: '"Fred Foo 👻" <taskserveruniversity@gmail.com>',
     to: email,
