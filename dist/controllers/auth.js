@@ -134,7 +134,7 @@ const verifyEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.verifyEmail = verifyEmail;
 const forgetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const email = req.body;
+    const { email } = req.body;
     const user = yield User_1.default.findOne({ email });
     if (!user)
         return res.send({ error: "Usuario no registrado" });

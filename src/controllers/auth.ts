@@ -109,7 +109,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
 };
 
 export const forgetPassword = async (req: Request, res: Response) => {
-  const email = req.body;
+  const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) return res.send({ error: "Usuario no registrado" });
   const token = generateToken(user, "10m");
