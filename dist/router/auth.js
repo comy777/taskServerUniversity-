@@ -36,7 +36,7 @@ authRouter.post("/forget-password", [
     (0, express_validator_1.check)("email", "Correo electronico no valido").isEmail(),
     validate_1.validate,
 ], auth_2.forgetPassword);
-authRouter.get("/reset-password/:token", [
+authRouter.put("/reset-password/:token", [
     (0, express_validator_1.check)("token", "Token requerido"),
     jwt_1.validateTokenCheck,
     (0, express_validator_1.check)("password", "La contraseña es requerida").notEmpty(),
