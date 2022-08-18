@@ -23,6 +23,7 @@ const notes_1 = __importDefault(require("../router/notes"));
 const task_1 = __importDefault(require("../router/task"));
 const upload_1 = __importDefault(require("../router/upload"));
 const schedlue_1 = __importDefault(require("../router/schedlue"));
+const search_1 = __importDefault(require("../router/search"));
 class Server {
     constructor() {
         this.db = () => __awaiter(this, void 0, void 0, function* () {
@@ -35,6 +36,7 @@ class Server {
             this.app.use(this.path.task, task_1.default);
             this.app.use(this.path.upload, upload_1.default);
             this.app.use(this.path.schedlue, schedlue_1.default);
+            this.app.use(this.path.search, search_1.default);
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || 1337;
@@ -45,6 +47,7 @@ class Server {
             task: "/tasks",
             upload: "/upload",
             schedlue: "/schedlue",
+            search: "/search",
         };
         //Database
         this.db();

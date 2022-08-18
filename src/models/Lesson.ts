@@ -38,6 +38,8 @@ const LessonSchema = new Schema(
   }
 );
 
+LessonSchema.index({ lesson: "text" });
+
 LessonSchema.methods.toJSON = function () {
   const { __v, created, state, user, ...data } = this.toObject();
   return data;

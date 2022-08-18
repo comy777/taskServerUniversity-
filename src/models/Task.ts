@@ -42,6 +42,8 @@ const TaskSchema = new Schema(
   { timestamps: true }
 );
 
+TaskSchema.index({ title: "text", body: "text" });
+
 TaskSchema.methods.toJSON = function () {
   const { __v, created, state, user, ...data } = this.toObject();
   return data;

@@ -33,6 +33,8 @@ const NoteSchema = new Schema(
   { timestamps: true }
 );
 
+NoteSchema.index({ title: "text", body: "text" });
+
 NoteSchema.methods.toJSON = function () {
   const { __v, created, state, user, lesson, ...data } = this.toObject();
   return data;

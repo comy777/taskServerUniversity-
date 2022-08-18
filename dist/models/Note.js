@@ -41,6 +41,7 @@ const NoteSchema = new mongoose_1.Schema({
         default: [],
     },
 }, { timestamps: true });
+NoteSchema.index({ title: "text", body: "text" });
 NoteSchema.methods.toJSON = function () {
     const _a = this.toObject(), { __v, created, state, user, lesson } = _a, data = __rest(_a, ["__v", "created", "state", "user", "lesson"]);
     return data;

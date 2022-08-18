@@ -46,6 +46,7 @@ const LessonSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
+LessonSchema.index({ lesson: "text" });
 LessonSchema.methods.toJSON = function () {
     const _a = this.toObject(), { __v, created, state, user } = _a, data = __rest(_a, ["__v", "created", "state", "user"]);
     return data;

@@ -50,6 +50,7 @@ const TaskSchema = new mongoose_1.Schema({
         default: Date.now(),
     },
 }, { timestamps: true });
+TaskSchema.index({ title: "text", body: "text" });
 TaskSchema.methods.toJSON = function () {
     const _a = this.toObject(), { __v, created, state, user } = _a, data = __rest(_a, ["__v", "created", "state", "user"]);
     return data;
