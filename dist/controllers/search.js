@@ -33,21 +33,6 @@ const searchTerm = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const notes = yield Note_1.default.find(search).limit(5);
     const tasks = yield Task_1.default.find(search).limit(5);
     const results = [...lessons, ...notes, ...tasks];
-    const data = [];
-    results.forEach((item, i) => {
-        if (item.type === "lesson") {
-            data[i] = { lesson: item };
-            return;
-        }
-        if (item.type === "note") {
-            data[i] = { note: item };
-            return;
-        }
-        if (item.type === "task") {
-            data[i] = { task: item };
-            return;
-        }
-    });
-    res.send(data);
+    res.send(results);
 });
 exports.searchTerm = searchTerm;

@@ -21,20 +21,5 @@ export const searchTerm = async (req: Request, res: Response) => {
   const notes = await Note.find(search).limit(5);
   const tasks = await Task.find(search).limit(5);
   const results = [...lessons, ...notes, ...tasks];
-  const data: any = [];
-  results.forEach((item, i) => {
-    if (item.type === "lesson") {
-      data[i] = { lesson: item };
-      return;
-    }
-    if (item.type === "note") {
-      data[i] = { note: item };
-      return;
-    }
-    if (item.type === "task") {
-      data[i] = { task: item };
-      return;
-    }
-  });
-  res.send(data);
+  res.send(results);
 };
