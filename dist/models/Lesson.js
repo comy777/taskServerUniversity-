@@ -43,6 +43,10 @@ const LessonSchema = new mongoose_1.Schema({
         type: String,
         default: "",
     },
+    type: {
+        type: String,
+        default: "lesson",
+    },
 }, {
     timestamps: true,
 });

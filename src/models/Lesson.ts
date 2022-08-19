@@ -32,6 +32,10 @@ const LessonSchema = new Schema(
       type: String,
       default: "",
     },
+    type: {
+      type: String,
+      default: "lesson",
+    },
   },
   {
     timestamps: true,

@@ -40,6 +40,10 @@ const NoteSchema = new mongoose_1.Schema({
         },
         default: [],
     },
+    type: {
+        type: String,
+        default: "note",
+    },
 }, { timestamps: true });
 NoteSchema.index({ title: "text", body: "text" });
 NoteSchema.methods.toJSON = function () {

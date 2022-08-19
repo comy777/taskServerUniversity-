@@ -29,11 +29,25 @@ const searchTerm = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // }
     const regex = new RegExp(term, "i");
     const search = { $text: { $search: term }, state: true, user };
-    const lessons = yield Lesson_1.default.find({ lesson: regex, state: true, user }).limit(5);
+    const lessons = yield Lesson_1.default.find(search).limit(5);
     const notes = yield Note_1.default.find(search).limit(5);
     const tasks = yield Task_1.default.find(search).limit(5);
-    res.send({
-        results: [{ lessons }, { notes }, { tasks }],
+    const results = [...lessons, ...notes, ...tasks];
+    const data = [];
+    results.forEach((item, i) => {
+        if (item.type === "lesson") {
+            data[i] = { lesson: item };
+            return;
+        }
+        if (item.type === "note") {
+            data[i] = { note: item };
+            return;
+        }
+        if (item.type === "task") {
+            data[i] = { task: item };
+            return;
+        }
     });
+    res.send(data);
 });
 exports.searchTerm = searchTerm;

@@ -49,6 +49,10 @@ const TaskSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now(),
     },
+    type: {
+        type: String,
+        default: "task",
+    },
 }, { timestamps: true });
 TaskSchema.index({ title: "text", body: "text" });
 TaskSchema.methods.toJSON = function () {

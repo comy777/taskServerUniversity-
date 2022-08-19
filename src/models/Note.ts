@@ -29,6 +29,10 @@ const NoteSchema = new Schema(
       },
       default: [],
     },
+    type: {
+      type: String,
+      default: "note",
+    },
   },
   { timestamps: true }
 );
