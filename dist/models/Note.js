@@ -44,6 +44,10 @@ const NoteSchema = new mongoose_1.Schema({
         type: String,
         default: "note",
     },
+    color: {
+        type: String,
+        default: "#8BC34A",
+    },
 }, { timestamps: true });
 NoteSchema.index({ title: "text", body: "text" });
 NoteSchema.methods.toJSON = function () {

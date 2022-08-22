@@ -33,6 +33,10 @@ const NoteSchema = new Schema(
       type: String,
       default: "note",
     },
+    color: {
+      type: String,
+      default: "#8BC34A",
+    },
   },
   { timestamps: true }
 );
