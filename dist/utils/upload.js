@@ -14,18 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.orderSchedule = exports.deleteSchedlueLesson = exports.saveSchedlueLesson = exports.deleteImage = exports.uploadImageCloudinary = void 0;
 const cloudinary_1 = __importDefault(require("cloudinary"));
+const fs_1 = __importDefault(require("fs"));
 const Schedlue_1 = __importDefault(require("../models/Schedlue"));
 cloudinary_1.default.v2.config(process.env.CLOUDINARY_URL);
 const uploadImageCloudinary = (image) => __awaiter(void 0, void 0, void 0, function* () {
     const extensionsValid = ["png", "jpg", "jpeg"];
-    const { name, tempFilePath } = image;
-    const nameExtension = name.split(".");
+    const { originalname, path } = image;
+    const nameExtension = originalname.split(".");
     const extension = nameExtension[nameExtension.length - 1];
     if (!extensionsValid.includes(extension))
         return;
-    return yield cloudinary_1.default.v2.uploader.upload(tempFilePath, {
+    const url = yield cloudinary_1.default.v2.uploader.upload(path, {
         upload_preset: process.env.UPLOAD_PRESET,
     });
+    yield fs_1.default.unlinkSync(path);
+    return url;
 });
 exports.uploadImageCloudinary = uploadImageCloudinary;
 const deleteImage = (id) => __awaiter(void 0, void 0, void 0, function* () {

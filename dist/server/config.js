@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const cors_1 = __importDefault(require("cors"));
-const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const config_1 = __importDefault(require("../database/config"));
 const auth_1 = __importDefault(require("../router/auth"));
 const lessons_1 = __importDefault(require("../router/lessons"));
@@ -24,6 +23,7 @@ const task_1 = __importDefault(require("../router/task"));
 const upload_1 = __importDefault(require("../router/upload"));
 const schedlue_1 = __importDefault(require("../router/schedlue"));
 const search_1 = __importDefault(require("../router/search"));
+const meet_1 = __importDefault(require("../router/meet"));
 class Server {
     constructor() {
         this.db = () => __awaiter(this, void 0, void 0, function* () {
@@ -37,6 +37,7 @@ class Server {
             this.app.use(this.path.upload, upload_1.default);
             this.app.use(this.path.schedlue, schedlue_1.default);
             this.app.use(this.path.search, search_1.default);
+            this.app.use(this.path.meets, meet_1.default);
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || 1337;
@@ -48,6 +49,7 @@ class Server {
             upload: "/upload",
             schedlue: "/schedlue",
             search: "/search",
+            meets: "/meets",
         };
         //Database
         this.db();
@@ -69,11 +71,13 @@ class Server {
         this.app.use((0, cors_1.default)());
         this.app.use(express_1.default.json());
         this.publicFolder();
-        this.app.use((0, express_fileupload_1.default)({
-            useTempFiles: true,
-            tempFileDir: "/tmp/",
-            createParentPath: true,
-        }));
+        // this.app.use(
+        //   fileUpload({
+        //     useTempFiles: true,
+        //     tempFileDir: "/tmp/",
+        //     createParentPath: true,
+        //   })
+        // );
         this.app.use(express_1.default.urlencoded({ extended: false }));
     }
 }

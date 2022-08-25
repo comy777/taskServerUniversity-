@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
-import fileUpload from "express-fileupload";
 import dbConection from "../database/config";
 import authRouter from "../router/auth";
 import lessonsRouter from "../router/lessons";
@@ -10,6 +9,7 @@ import taskRouter from "../router/task";
 import uploadRouter from "../router/upload";
 import schedlueRouter from "../router/schedlue";
 import searchRouter from "../router/search";
+import meetRouter from "../router/meet";
 
 class Server {
   public app: express.Application;
@@ -22,6 +22,7 @@ class Server {
     upload: string;
     schedlue: string;
     search: string;
+    meets: string;
   };
   constructor() {
     this.app = express();
@@ -34,6 +35,7 @@ class Server {
       upload: "/upload",
       schedlue: "/schedlue",
       search: "/search",
+      meets: "/meets",
     };
 
     //Database
@@ -65,13 +67,13 @@ class Server {
     this.app.use(cors());
     this.app.use(express.json());
     this.publicFolder();
-    this.app.use(
-      fileUpload({
-        useTempFiles: true,
-        tempFileDir: "/tmp/",
-        createParentPath: true,
-      })
-    );
+    // this.app.use(
+    //   fileUpload({
+    //     useTempFiles: true,
+    //     tempFileDir: "/tmp/",
+    //     createParentPath: true,
+    //   })
+    // );
     this.app.use(express.urlencoded({ extended: false }));
   }
 
@@ -83,6 +85,7 @@ class Server {
     this.app.use(this.path.upload, uploadRouter);
     this.app.use(this.path.schedlue, schedlueRouter);
     this.app.use(this.path.search, searchRouter);
+    this.app.use(this.path.meets, meetRouter);
   };
 }
 

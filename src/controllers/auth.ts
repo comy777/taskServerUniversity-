@@ -48,7 +48,6 @@ export const register = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   const id = req.user;
-  console.log(id);
   const user = await User.findById(id);
   if (!user) return res.send({ error: "Usuario no registrado" });
   return res.send({ user });

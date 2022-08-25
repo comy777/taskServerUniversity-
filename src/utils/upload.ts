@@ -1,4 +1,5 @@
 import cloudinary from "cloudinary";
+import fs from "fs";
 import { Schedule, ScheduleResponse } from "../interfaces/interfaces";
 import SchedlueModel from "../models/Schedlue";
 cloudinary.v2.config(process.env.CLOUDINARY_URL);
@@ -10,13 +11,15 @@ interface Props {
 
 export const uploadImageCloudinary = async (image: any) => {
   const extensionsValid = ["png", "jpg", "jpeg"];
-  const { name, tempFilePath } = image;
-  const nameExtension = name.split(".");
+  const { originalname, path } = image;
+  const nameExtension = originalname.split(".");
   const extension = nameExtension[nameExtension.length - 1];
   if (!extensionsValid.includes(extension)) return;
-  return await cloudinary.v2.uploader.upload(tempFilePath, {
+  const url = await cloudinary.v2.uploader.upload(path, {
     upload_preset: process.env.UPLOAD_PRESET,
   });
+  await fs.unlinkSync(path);
+  return url;
 };
 
 export const deleteImage = async (id: string) => {
