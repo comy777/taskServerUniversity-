@@ -31,6 +31,10 @@ const FileSchema = new Schema(
     type: {
       type: String,
     },
+    image: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

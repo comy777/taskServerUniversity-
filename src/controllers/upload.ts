@@ -11,6 +11,7 @@ import { storage } from "../firebase/config";
 import File from "../models/File";
 import Lesson from "../models/Lesson";
 import { deleteImage, uploadImageCloudinary } from "../utils/upload";
+import { getIconsFile } from "./faticon";
 
 export const uploadImage = async (req: Request, res: Response) => {
   if (!req.file) return res.send({ error: "No hay imagenes para subir" });
@@ -74,6 +75,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       `Task University/${user}/${lesson}/${id}.${extension}`
     );
     await uploadBytes(storageRef, buffer);
+    const image = await getIconsFile(extension);
     const url = await getDownloadURL(storageRef);
     const data = {
       filename: originalname,
@@ -82,6 +84,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       lesson,
       refFile: storageRef.fullPath,
       type: extension,
+      image,
     };
     const fileData = new File(data);
     await fileData.save();

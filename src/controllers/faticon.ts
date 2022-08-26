@@ -43,8 +43,7 @@ const validateTokenFaticon = async (data: TokenResponse) => {
   return [data];
 };
 
-export const getIcons = async (req: Request, res: Response) => {
-  const { q } = req.params;
+const tokenStorageData = async (q: string): Promise<Icons> => {
   let tokenStorage = await Token.find<TokenResponse>();
   if (tokenStorage.length === 0) {
     tokenStorage = await saveTokenStorage();
@@ -57,6 +56,18 @@ export const getIcons = async (req: Request, res: Response) => {
       authorization: `Bearer ${token}`,
     },
   });
+  return data;
+};
+
+export const getIcons = async (req: Request, res: Response) => {
+  const { q } = req.params;
+  const data = await tokenStorageData(q);
   const { data: dataIcons } = data;
   return res.send({ icons: dataIcons[0] });
+};
+
+export const getIconsFile = async (query: string) => {
+  const data = await tokenStorageData(query);
+  const { data: dataIcons } = data;
+  return dataIcons[0].images["512"];
 };

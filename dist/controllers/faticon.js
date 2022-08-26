@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIcons = void 0;
+exports.getIconsFile = exports.getIcons = void 0;
 const moment_1 = __importDefault(require("moment"));
 const config_1 = require("../axios/config");
 const Token_1 = __importDefault(require("../models/Token"));
@@ -48,8 +48,7 @@ const validateTokenFaticon = (data) => __awaiter(void 0, void 0, void 0, functio
     }
     return [data];
 });
-const getIcons = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { q } = req.params;
+const tokenStorageData = (q) => __awaiter(void 0, void 0, void 0, function* () {
     let tokenStorage = yield Token_1.default.find();
     if (tokenStorage.length === 0) {
         tokenStorage = yield saveTokenStorage();
@@ -63,7 +62,18 @@ const getIcons = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             authorization: `Bearer ${token}`,
         },
     });
+    return data;
+});
+const getIcons = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { q } = req.params;
+    const data = yield tokenStorageData(q);
     const { data: dataIcons } = data;
     return res.send({ icons: dataIcons[0] });
 });
 exports.getIcons = getIcons;
+const getIconsFile = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield tokenStorageData(query);
+    const { data: dataIcons } = data;
+    return dataIcons[0].images["512"];
+});
+exports.getIconsFile = getIconsFile;

@@ -42,6 +42,10 @@ const FileSchema = new mongoose_1.Schema({
     type: {
         type: String,
     },
+    image: {
+        type: String,
+        default: "",
+    },
 }, { timestamps: true });
 FileSchema.index({ filename: "text", file: "text" });
 FileSchema.methods.toJSON = function () {

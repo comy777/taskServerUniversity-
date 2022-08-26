@@ -19,6 +19,7 @@ const config_1 = require("../firebase/config");
 const File_1 = __importDefault(require("../models/File"));
 const Lesson_1 = __importDefault(require("../models/Lesson"));
 const upload_1 = require("../utils/upload");
+const faticon_1 = require("./faticon");
 const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.file)
         return res.send({ error: "No hay imagenes para subir" });
@@ -84,6 +85,7 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const storageRef = (0, storage_1.ref)(config_1.storage, `Task University/${user}/${lesson}/${id}.${extension}`);
         yield (0, storage_1.uploadBytes)(storageRef, buffer);
+        const image = yield (0, faticon_1.getIconsFile)(extension);
         const url = yield (0, storage_1.getDownloadURL)(storageRef);
         const data = {
             filename: originalname,
@@ -92,6 +94,7 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             lesson,
             refFile: storageRef.fullPath,
             type: extension,
+            image,
         };
         const fileData = new File_1.default(data);
         yield fileData.save();
