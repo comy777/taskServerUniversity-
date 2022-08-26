@@ -24,6 +24,7 @@ const upload_1 = __importDefault(require("../router/upload"));
 const schedlue_1 = __importDefault(require("../router/schedlue"));
 const search_1 = __importDefault(require("../router/search"));
 const meet_1 = __importDefault(require("../router/meet"));
+const faticon_1 = __importDefault(require("../router/faticon"));
 class Server {
     constructor() {
         this.db = () => __awaiter(this, void 0, void 0, function* () {
@@ -38,6 +39,7 @@ class Server {
             this.app.use(this.path.schedlue, schedlue_1.default);
             this.app.use(this.path.search, search_1.default);
             this.app.use(this.path.meets, meet_1.default);
+            this.app.use(this.path.faticon, faticon_1.default);
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || 1337;
@@ -50,6 +52,7 @@ class Server {
             schedlue: "/schedlue",
             search: "/search",
             meets: "/meets",
+            faticon: "/faticon",
         };
         //Database
         this.db();

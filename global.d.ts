@@ -7,6 +7,7 @@ namespace NodeJS {
     CLOUDINARY_URL: string;
     UPLOAD_PRESET: string;
     PASSWORD_EMAIL: string;
+    API_FATICON: string;
   }
 }
 

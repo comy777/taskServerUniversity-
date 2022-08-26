@@ -10,6 +10,7 @@ import uploadRouter from "../router/upload";
 import schedlueRouter from "../router/schedlue";
 import searchRouter from "../router/search";
 import meetRouter from "../router/meet";
+import faticonRouter from "../router/faticon";
 
 class Server {
   public app: express.Application;
@@ -23,6 +24,7 @@ class Server {
     schedlue: string;
     search: string;
     meets: string;
+    faticon: string;
   };
   constructor() {
     this.app = express();
@@ -36,6 +38,7 @@ class Server {
       schedlue: "/schedlue",
       search: "/search",
       meets: "/meets",
+      faticon: "/faticon",
     };
 
     //Database
@@ -86,6 +89,7 @@ class Server {
     this.app.use(this.path.schedlue, schedlueRouter);
     this.app.use(this.path.search, searchRouter);
     this.app.use(this.path.meets, meetRouter);
+    this.app.use(this.path.faticon, faticonRouter);
   };
 }
 

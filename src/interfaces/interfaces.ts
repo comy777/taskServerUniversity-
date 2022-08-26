@@ -50,3 +50,71 @@ export interface MeetInterface {
   start_time: string;
   link?: string;
 }
+
+export interface TokenResponse {
+  token: string;
+  expires: string;
+  created: Date;
+  _id: string;
+}
+
+export interface TokenFaticon {
+  token: string;
+  expires: number;
+  created: any;
+}
+
+export interface TokenFaticonResponse {
+  data: TokenFaticon;
+}
+
+export interface FaticonAPIResponse {
+  icons: Icons;
+}
+
+export interface Icons {
+  data: Datum[];
+  metadata: Metadata;
+}
+
+export interface Datum {
+  id: number;
+  description: string;
+  colors: string;
+  color: Color;
+  shape: Shape;
+  family_id: number;
+  family_name: string;
+  team_name: TeamName;
+  added: number;
+  pack_id: number;
+  pack_name: string;
+  pack_items: number;
+  tags: string;
+  equivalents: number;
+  images: { [key: string]: string };
+}
+
+export enum Color {
+  Black = "black",
+  Color = "color",
+  Empty = "",
+  Gradient = "gradient",
+}
+
+export enum Shape {
+  Empty = "",
+  Fill = "fill",
+  LinealColor = "lineal-color",
+  Outline = "outline",
+}
+
+export enum TeamName {
+  Freepik = "Freepik",
+}
+
+export interface Metadata {
+  page: number;
+  count: number;
+  total: number;
+}
