@@ -39,6 +39,9 @@ const FileSchema = new mongoose_1.Schema({
         type: String,
         required: [true, "La referencia es requerida"],
     },
+    type: {
+        type: String,
+    },
 }, { timestamps: true });
 FileSchema.index({ filename: "text", file: "text" });
 FileSchema.methods.toJSON = function () {

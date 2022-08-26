@@ -24,10 +24,10 @@ const deleteMeetById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 const getMeets = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const query = { user, state: true };
-    let meets = yield Meet_1.default.find(query);
+    const meets = yield Meet_1.default.find(query);
     let bandera = false;
     const fechaActual = (0, moment_1.default)();
-    meets.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
+    yield meets.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
         const { date_meet, start_time, _id } = item;
         const diferenciaDias = (0, moment_1.default)(date_meet).diff(fechaActual, "days");
         if (diferenciaDias < 0) {
@@ -44,8 +44,10 @@ const getMeets = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
     }));
-    if (bandera)
-        meets = yield Meet_1.default.find(query);
+    if (bandera) {
+        const newMeets = yield Meet_1.default.find(query);
+        return res.send({ meets: newMeets });
+    }
     return res.send({ meets });
 });
 exports.getMeets = getMeets;

@@ -81,6 +81,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       user,
       lesson,
       refFile: storageRef.fullPath,
+      type: extension,
     };
     const fileData = new File(data);
     await fileData.save();

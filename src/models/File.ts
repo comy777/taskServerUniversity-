@@ -28,6 +28,9 @@ const FileSchema = new Schema(
       type: String,
       required: [true, "La referencia es requerida"],
     },
+    type: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

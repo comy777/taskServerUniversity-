@@ -12,10 +12,10 @@ const deleteMeetById = async (id: string) => {
 export const getMeets = async (req: Request, res: Response) => {
   const user = req.user;
   const query = { user, state: true };
-  let meets: MeetInterface[] = await Meet.find<MeetInterface>(query);
+  const meets: MeetInterface[] = await Meet.find<MeetInterface>(query);
   let bandera = false;
   const fechaActual = moment();
-  meets.forEach(async (item) => {
+  await meets.forEach(async (item) => {
     const { date_meet, start_time, _id } = item;
     const diferenciaDias = moment(date_meet).diff(fechaActual, "days");
     if (diferenciaDias < 0) {
@@ -31,7 +31,10 @@ export const getMeets = async (req: Request, res: Response) => {
       return;
     }
   });
-  if (bandera) meets = await Meet.find<MeetInterface>(query);
+  if (bandera) {
+    const newMeets = await Meet.find<MeetInterface>(query);
+    return res.send({ meets: newMeets });
+  }
   return res.send({ meets });
 };
 

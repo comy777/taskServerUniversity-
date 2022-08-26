@@ -91,6 +91,7 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             user,
             lesson,
             refFile: storageRef.fullPath,
+            type: extension,
         };
         const fileData = new File_1.default(data);
         yield fileData.save();
