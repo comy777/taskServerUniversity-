@@ -35,18 +35,15 @@ const validateTokenFaticon = (data) => __awaiter(void 0, void 0, void 0, functio
     const { created } = data;
     const fechaActual = (0, moment_1.default)();
     const diferenciaHoras = (0, moment_1.default)(created).diff(fechaActual, "minutes");
-    if (diferenciaHoras > 50) {
-        console.log("Refrescar token");
+    if (diferenciaHoras <= 0) {
         const { _id } = data;
-        const dataToken = getTokenFaticon();
-        const resp = yield Token_1.default.findByIdAndUpdate(_id, dataToken, {
+        const dataToken = yield getTokenFaticon();
+        const tokenStorage = yield Token_1.default.findByIdAndUpdate(_id, dataToken, {
             new: true,
         });
-        if (!resp)
-            return [data];
-        return [resp];
+        return tokenStorage;
     }
-    return [data];
+    return data;
 });
 const tokenStorageData = (q) => __awaiter(void 0, void 0, void 0, function* () {
     let tokenStorage = yield Token_1.default.find();
@@ -54,7 +51,16 @@ const tokenStorageData = (q) => __awaiter(void 0, void 0, void 0, function* () {
         tokenStorage = yield saveTokenStorage();
     }
     else {
-        tokenStorage = yield validateTokenFaticon(tokenStorage[0]);
+        const resp = yield validateTokenFaticon(tokenStorage[0]);
+        if (!resp)
+            return;
+        const { token } = resp;
+        const { data } = yield config_1.appFaticonApi.get(`search/icons?q=${q}`, {
+            headers: {
+                authorization: `Bearer ${token}`,
+            },
+        });
+        return data;
     }
     const { token } = tokenStorage[0];
     const { data } = yield config_1.appFaticonApi.get(`search/icons?q=${q}`, {
@@ -67,12 +73,16 @@ const tokenStorageData = (q) => __awaiter(void 0, void 0, void 0, function* () {
 const getIcons = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { q } = req.params;
     const data = yield tokenStorageData(q);
+    if (!data)
+        return res.send({ error: "Error del servidor" });
     const { data: dataIcons } = data;
-    return res.send({ icons: dataIcons[0] });
+    return res.send({ icon: dataIcons[0].images["512"] });
 });
 exports.getIcons = getIcons;
 const getIconsFile = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield tokenStorageData(query);
+    if (!data)
+        return;
     const { data: dataIcons } = data;
     return dataIcons[0].images["512"];
 });
