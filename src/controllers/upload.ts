@@ -12,6 +12,8 @@ import File from "../models/File";
 import Lesson from "../models/Lesson";
 import { deleteImage, uploadImageCloudinary } from "../utils/upload";
 import { getIconsFile } from "./faticon";
+import { uploadFileFirebase, validateFolderById } from "../utils/helpers";
+import Folder from "../models/Folder";
 
 export const uploadImage = async (req: Request, res: Response) => {
   if (!req.file) return res.send({ error: "No hay imagenes para subir" });
@@ -56,39 +58,38 @@ export const getFiles = async (req: Request, res: Response) => {
 };
 
 export const uploadFile = async (req: Request, res: Response) => {
-  if (!req.file) return res.send({ error: "No hay archivos para subirl" });
+  if (!req.file) return res.send({ error: "No hay archivos para subir" });
   const user = req.user;
-  const { lesson } = req.params;
+  const { lesson, folder } = req.params;
+  let folderName: string | undefined = undefined;
+  if (folder) {
+    const validate = await validateFolderById(folder, user);
+    if (validate.error) return res.send({ error: validate.error });
+    const folderData = await Folder.findById(folder);
+    folderName = folderData.folder;
+  }
   const validateLesson = await Lesson.findById(lesson);
   if (!validateLesson) return res.send({ error: "La clase no existe" });
   if (validateLesson.user.toString() !== user)
     return res.send({ error: "No tiene permiso" });
   const file = req.file;
-  const { originalname } = file;
-  const extensionSplit = originalname.split(".");
-  const extension = extensionSplit[extensionSplit.length - 1];
-  const { buffer } = file;
-  const id = v4();
   try {
-    const storageRef = ref(
-      storage,
-      `Task University/${user}/${lesson}/${id}.${extension}`
-    );
-    await uploadBytes(storageRef, buffer);
-    const image = await getIconsFile(extension);
-    const url = await getDownloadURL(storageRef);
-    const data = {
-      filename: originalname,
-      file: url,
-      user,
-      lesson,
-      refFile: storageRef.fullPath,
-      type: extension,
-      image,
-    };
-    const fileData = new File(data);
-    await fileData.save();
-    return res.send({ file: fileData });
+    const data = await uploadFileFirebase(file, user, lesson, folderName);
+    if (data) {
+      const fileData = new File(data);
+      await fileData.save();
+      if (folder) {
+        if (folderName) {
+          const query = { lesson, user, state: true, folder: folderName };
+          const files = await File.find(query);
+          const filesUpdated = files.map((item) => ({ file: item._id }));
+          await Folder.findByIdAndUpdate(folder, {
+            files: filesUpdated,
+          });
+        }
+      }
+      return res.send({ file: fileData });
+    }
   } catch (error) {
     console.log(error);
     return res.send({ error: "Error al subir archivo" });

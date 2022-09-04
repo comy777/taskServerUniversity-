@@ -46,5 +46,12 @@ uploadRouter.post("/file/:lesson", [
     validate_1.validate,
     upload,
 ], upload_1.uploadFile);
+uploadRouter.post("/file/:lesson/:folder", [
+    jwt_1.validateToken,
+    (0, express_validator_1.check)("lesson", "Mongo id no valido").isMongoId(),
+    (0, express_validator_1.check)("folder", "Mongo id no valido").isMongoId(),
+    validate_1.validate,
+    upload,
+], upload_1.uploadFile);
 uploadRouter.delete("/file/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "Mongo id no valido").isMongoId(), validate_1.validate], upload_2.deleteFileFirebase);
 exports.default = uploadRouter;

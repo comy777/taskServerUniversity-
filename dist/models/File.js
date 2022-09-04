@@ -31,6 +31,10 @@ const FileSchema = new mongoose_1.Schema({
         ref: "lesson",
         required: [true, "La clase es requerida"],
     },
+    folder: {
+        type: String,
+        default: "",
+    },
     state: {
         type: Boolean,
         default: true,

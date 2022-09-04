@@ -11,6 +11,7 @@ import schedlueRouter from "../router/schedlue";
 import searchRouter from "../router/search";
 import meetRouter from "../router/meet";
 import faticonRouter from "../router/faticon";
+import folderRouter from "../router/folder";
 
 class Server {
   public app: express.Application;
@@ -25,6 +26,7 @@ class Server {
     search: string;
     meets: string;
     faticon: string;
+    folders: string;
   };
   constructor() {
     this.app = express();
@@ -39,6 +41,7 @@ class Server {
       search: "/search",
       meets: "/meets",
       faticon: "/faticon",
+      folders: "/folders",
     };
 
     //Database
@@ -90,6 +93,7 @@ class Server {
     this.app.use(this.path.search, searchRouter);
     this.app.use(this.path.meets, meetRouter);
     this.app.use(this.path.faticon, faticonRouter);
+    this.app.use(this.path.folders, folderRouter);
   };
 }
 

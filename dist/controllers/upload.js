@@ -14,12 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteFileFirebase = exports.uploadFile = exports.getFiles = exports.deleteImageUpload = exports.uploadImage = void 0;
 const storage_1 = require("firebase/storage");
-const uuid_1 = require("uuid");
 const config_1 = require("../firebase/config");
 const File_1 = __importDefault(require("../models/File"));
 const Lesson_1 = __importDefault(require("../models/Lesson"));
 const upload_1 = require("../utils/upload");
-const faticon_1 = require("./faticon");
+const helpers_1 = require("../utils/helpers");
+const Folder_1 = __importDefault(require("../models/Folder"));
 const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.file)
         return res.send({ error: "No hay imagenes para subir" });
@@ -68,37 +68,40 @@ const getFiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getFiles = getFiles;
 const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.file)
-        return res.send({ error: "No hay archivos para subirl" });
+        return res.send({ error: "No hay archivos para subir" });
     const user = req.user;
-    const { lesson } = req.params;
+    const { lesson, folder } = req.params;
+    let folderName = undefined;
+    if (folder) {
+        const validate = yield (0, helpers_1.validateFolderById)(folder, user);
+        if (validate.error)
+            return res.send({ error: validate.error });
+        const folderData = yield Folder_1.default.findById(folder);
+        folderName = folderData.folder;
+    }
     const validateLesson = yield Lesson_1.default.findById(lesson);
     if (!validateLesson)
         return res.send({ error: "La clase no existe" });
     if (validateLesson.user.toString() !== user)
         return res.send({ error: "No tiene permiso" });
     const file = req.file;
-    const { originalname } = file;
-    const extensionSplit = originalname.split(".");
-    const extension = extensionSplit[extensionSplit.length - 1];
-    const { buffer } = file;
-    const id = (0, uuid_1.v4)();
     try {
-        const storageRef = (0, storage_1.ref)(config_1.storage, `Task University/${user}/${lesson}/${id}.${extension}`);
-        yield (0, storage_1.uploadBytes)(storageRef, buffer);
-        const image = yield (0, faticon_1.getIconsFile)(extension);
-        const url = yield (0, storage_1.getDownloadURL)(storageRef);
-        const data = {
-            filename: originalname,
-            file: url,
-            user,
-            lesson,
-            refFile: storageRef.fullPath,
-            type: extension,
-            image,
-        };
-        const fileData = new File_1.default(data);
-        yield fileData.save();
-        return res.send({ file: fileData });
+        const data = yield (0, helpers_1.uploadFileFirebase)(file, user, lesson, folderName);
+        if (data) {
+            const fileData = new File_1.default(data);
+            yield fileData.save();
+            if (folder) {
+                if (folderName) {
+                    const query = { lesson, user, state: true, folder: folderName };
+                    const files = yield File_1.default.find(query);
+                    const filesUpdated = files.map((item) => ({ file: item._id }));
+                    yield Folder_1.default.findByIdAndUpdate(folder, {
+                        files: filesUpdated,
+                    });
+                }
+            }
+            return res.send({ file: fileData });
+        }
     }
     catch (error) {
         console.log(error);

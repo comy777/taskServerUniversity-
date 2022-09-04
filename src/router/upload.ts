@@ -40,6 +40,18 @@ uploadRouter.post(
   uploadFile
 );
 
+uploadRouter.post(
+  "/file/:lesson/:folder",
+  [
+    validateToken,
+    check("lesson", "Mongo id no valido").isMongoId(),
+    check("folder", "Mongo id no valido").isMongoId(),
+    validate,
+    upload,
+  ],
+  uploadFile
+);
+
 uploadRouter.delete(
   "/file/:id",
   [validateToken, check("id", "Mongo id no valido").isMongoId(), validate],
