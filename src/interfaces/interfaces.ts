@@ -118,3 +118,24 @@ export interface Metadata {
   count: number;
   total: number;
 }
+
+export interface GetFileResponse {
+  files: File[];
+}
+
+export interface FileReponse {
+  _id: string;
+  filename: string;
+  file: string;
+  lesson: string;
+  folder: string;
+  refFile: string;
+  type: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FolderFile {
+  file: string;
+}

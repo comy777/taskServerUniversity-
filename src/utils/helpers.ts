@@ -5,6 +5,8 @@ import { storage } from "../firebase/config";
 import Folder from "../models/Folder";
 import Lesson from "../models/Lesson";
 import User from "../models/User";
+import { FileReponse, FolderFile } from "../interfaces/interfaces";
+import File from "../models/File";
 
 interface ValidateFolder {
   folder: string;
@@ -30,16 +32,13 @@ export const validateLesson = async (id: string) => {
   return true;
 };
 
-export const validateFolderById = async (
-  id: string,
-  user: string
-): Promise<ValidateUser> => {
+export const validateFolderById = async (id: string, user: string) => {
   const validate = await Folder.findById(id);
   if (!validate) return { error: "Carpeta no registrada" };
   if (!validate.state) return { error: "Carpeta no registrada" };
   if (validate.user.toString() !== user)
     return { error: "No tiene permisos para modificar esta carpeta" };
-  return { id: validate._id };
+  return { folder: validate };
 };
 
 export const validateFolderByName = async (
@@ -95,4 +94,21 @@ export const uploadFileFirebase = async (
     console.log(error);
     return;
   }
+};
+
+export const getFilesData = async (
+  filesData: FolderFile[]
+): Promise<FileReponse[]> => {
+  return new Promise((resolve) => {
+    let contador = 0;
+    const files: FileReponse[] = [];
+    filesData.forEach(async (item: FolderFile) => {
+      const { file } = item;
+      const data = await File.findById(file);
+      if (!data) return;
+      files[contador] = data;
+      contador = contador + 1;
+      if (contador === filesData.length) resolve(files);
+    });
+  });
 };

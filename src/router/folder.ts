@@ -2,6 +2,7 @@ import { Router } from "express";
 import { validateToken } from "../jwt/jwt";
 import { check } from "express-validator";
 import { validate } from "../middlewares/validate";
+import { getFilesFolder } from "../controllers/folder";
 import {
   getFoldersLesson,
   addFolder,
@@ -51,6 +52,12 @@ folderRouter.delete(
     validate,
   ],
   deleteFolder
+);
+
+folderRouter.get(
+  "/folder/:id",
+  [validateToken, check("id", "Id mongo no valido").isMongoId(), validate],
+  getFilesFolder
 );
 
 export default folderRouter;

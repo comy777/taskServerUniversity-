@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import Folder from "../models/Folder";
-import { validateFolderById, validateFolderData } from "../utils/helpers";
+import {
+  validateFolderById,
+  validateFolderData,
+  getFilesData,
+} from "../utils/helpers";
 
 export const getFoldersLesson = async (req: Request, res: Response) => {
   const user = req.user;
@@ -8,6 +12,15 @@ export const getFoldersLesson = async (req: Request, res: Response) => {
   const query = { user, lesson, state: true };
   const folders = await Folder.find(query);
   return res.send({ folders });
+};
+
+export const getFilesFolder = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = req.user;
+  const validate = await validateFolderById(id, user);
+  if (validate.error) return res.send({ error: validate.error });
+  const files = await getFilesData(validate.folder.files);
+  return res.send(files);
 };
 
 export const addFolder = async (req: Request, res: Response) => {
@@ -37,8 +50,7 @@ export const updateFolder = async (req: Request, res: Response) => {
     return res.send({ error: validate.error });
   }
   try {
-    const { id: idFolder } = validate;
-    const folderUpdate = await Folder.findByIdAndUpdate(idFolder, req.body, {
+    const folderUpdate = await Folder.findByIdAndUpdate(id, req.body, {
       new: true,
     });
     return res.send({ folder: folderUpdate });
@@ -52,10 +64,8 @@ export const deleteFolder = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.user;
   const validate = await validateFolderById(id, user);
-  if (!validate)
-    return res.send({ error: "La carpeta no se encuentra registrada" });
+  if (validate.error) return res.send({ error: validate.error });
   try {
-    const id = validate;
     await Folder.findByIdAndUpdate(id, { state: false });
     return res.send({ msg: "Carpeta eliminada" });
   } catch (error) {
