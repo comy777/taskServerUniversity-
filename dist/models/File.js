@@ -35,6 +35,10 @@ const FileSchema = new mongoose_1.Schema({
         type: String,
         default: "",
     },
+    folderID: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "folder",
+    },
     state: {
         type: Boolean,
         default: true,

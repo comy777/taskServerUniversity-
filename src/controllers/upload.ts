@@ -1,19 +1,12 @@
 import { Request, Response } from "express";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-  StorageReference,
-} from "firebase/storage";
-import { v4 } from "uuid";
+import { ref, deleteObject, StorageReference } from "firebase/storage";
 import { storage } from "../firebase/config";
 import File from "../models/File";
 import Lesson from "../models/Lesson";
 import { deleteImage, uploadImageCloudinary } from "../utils/upload";
-import { getIconsFile } from "./faticon";
 import { uploadFileFirebase, validateFolderById } from "../utils/helpers";
 import Folder from "../models/Folder";
+import { FolderProps } from "../interfaces/interfaces";
 
 export const uploadImage = async (req: Request, res: Response) => {
   if (!req.file) return res.send({ error: "No hay imagenes para subir" });
@@ -62,11 +55,15 @@ export const uploadFile = async (req: Request, res: Response) => {
   const user = req.user;
   const { lesson, folder } = req.params;
   let folderName: string | undefined = undefined;
+  let folderID: string | undefined = undefined;
+  let dataFolder: FolderProps | undefined = undefined;
   if (folder) {
     const validate = await validateFolderById(folder, user);
     if (validate.error) return res.send({ error: validate.error });
     const folderData = await Folder.findById(folder);
     folderName = folderData.folder;
+    folderID = folderData._id;
+    if (folderName && folderID) dataFolder = { folder: folderName, folderID };
   }
   const validateLesson = await Lesson.findById(lesson);
   if (!validateLesson) return res.send({ error: "La clase no existe" });
@@ -74,7 +71,7 @@ export const uploadFile = async (req: Request, res: Response) => {
     return res.send({ error: "No tiene permiso" });
   const file = req.file;
   try {
-    const data = await uploadFileFirebase(file, user, lesson, folderName);
+    const data = await uploadFileFirebase(file, user, lesson, dataFolder);
     if (data) {
       const fileData = new File(data);
       await fileData.save();
@@ -106,8 +103,17 @@ export const deleteFileFirebase = async (req: Request, res: Response) => {
   const storageRef: StorageReference = ref(storage, validateFile.refFile);
   try {
     await deleteObject(storageRef);
-    const { _id } = validateFile;
-    await File.findByIdAndUpdate(_id, { state: false });
+    await File.findByIdAndUpdate(id, { state: false });
+    if (validateFile.folderID) {
+      const idFolder = validateFile.folderID;
+      const folder = await Folder.findById(idFolder);
+      if (folder) {
+        const files = folder.files.filter(
+          (item: any) => item.file.toString() !== id
+        );
+        await Folder.findByIdAndUpdate(idFolder, { files });
+      }
+    }
     return res.send({ msg: "Archivo eliminado" });
   } catch (error) {
     console.log(error);

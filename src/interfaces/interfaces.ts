@@ -139,3 +139,8 @@ export interface FileReponse {
 export interface FolderFile {
   file: string;
 }
+
+export interface FolderProps {
+  folder: string;
+  folderID: string;
+}

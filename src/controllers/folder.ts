@@ -20,7 +20,7 @@ export const getFilesFolder = async (req: Request, res: Response) => {
   const validate = await validateFolderById(id, user);
   if (validate.error) return res.send({ error: validate.error });
   const files = await getFilesData(validate.folder.files);
-  return res.send(files);
+  return res.send({ files });
 };
 
 export const addFolder = async (req: Request, res: Response) => {

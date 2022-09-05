@@ -24,6 +24,10 @@ const FileSchema = new Schema(
       type: String,
       default: "",
     },
+    folderID: {
+      type: Schema.Types.ObjectId,
+      ref: "folder",
+    },
     state: {
       type: Boolean,
       default: true,

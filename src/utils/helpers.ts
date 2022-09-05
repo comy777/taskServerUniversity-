@@ -5,7 +5,7 @@ import { storage } from "../firebase/config";
 import Folder from "../models/Folder";
 import Lesson from "../models/Lesson";
 import User from "../models/User";
-import { FileReponse, FolderFile } from "../interfaces/interfaces";
+import { FileReponse, FolderFile, FolderProps } from "../interfaces/interfaces";
 import File from "../models/File";
 
 interface ValidateFolder {
@@ -65,30 +65,41 @@ export const uploadFileFirebase = async (
   file: Express.Multer.File,
   user: string,
   lesson: string,
-  folder?: string
+  dataFolder?: FolderProps
 ) => {
   const { originalname, buffer } = file;
   const extensionSplit = originalname.split(".");
   const extension = extensionSplit[extensionSplit.length - 1];
   const id = v4();
-  const refFile = folder
-    ? `Task University/${user}/${lesson}/${folder}/${id}.${extension}`
+  const refFile = dataFolder
+    ? `Task University/${user}/${lesson}/${dataFolder.folder}/${id}.${extension}`
     : `Task University/${user}/${lesson}/${id}.${extension}`;
   try {
     const storageRef = ref(storage, refFile);
     await uploadBytes(storageRef, buffer);
     const image = await getIconsFile(extension);
     const url = await getDownloadURL(storageRef);
-    const data = {
-      filename: originalname,
-      file: url,
-      user,
-      lesson,
-      refFile: storageRef.fullPath,
-      type: extension,
-      image,
-      folder: folder ? folder : "",
-    };
+    const data = dataFolder
+      ? {
+          filename: originalname,
+          file: url,
+          user,
+          lesson,
+          refFile: storageRef.fullPath,
+          type: extension,
+          image,
+          folder: dataFolder.folder,
+          folderID: dataFolder.folderID,
+        }
+      : {
+          filename: originalname,
+          file: url,
+          user,
+          lesson,
+          refFile: storageRef.fullPath,
+          type: extension,
+          image,
+        };
     return data;
   } catch (error) {
     console.log(error);
@@ -102,12 +113,13 @@ export const getFilesData = async (
   return new Promise((resolve) => {
     let contador = 0;
     const files: FileReponse[] = [];
+    if (filesData.length === 0) resolve(files);
     filesData.forEach(async (item: FolderFile) => {
       const { file } = item;
       const data = await File.findById(file);
       if (!data) return;
       files[contador] = data;
-      contador = contador + 1;
+      contador += 1;
       if (contador === filesData.length) resolve(files);
     });
   });

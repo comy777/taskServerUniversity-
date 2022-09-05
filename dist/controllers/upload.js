@@ -72,12 +72,17 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const user = req.user;
     const { lesson, folder } = req.params;
     let folderName = undefined;
+    let folderID = undefined;
+    let dataFolder = undefined;
     if (folder) {
         const validate = yield (0, helpers_1.validateFolderById)(folder, user);
         if (validate.error)
             return res.send({ error: validate.error });
         const folderData = yield Folder_1.default.findById(folder);
         folderName = folderData.folder;
+        folderID = folderData._id;
+        if (folderName && folderID)
+            dataFolder = { folder: folderName, folderID };
     }
     const validateLesson = yield Lesson_1.default.findById(lesson);
     if (!validateLesson)
@@ -86,7 +91,7 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         return res.send({ error: "No tiene permiso" });
     const file = req.file;
     try {
-        const data = yield (0, helpers_1.uploadFileFirebase)(file, user, lesson, folderName);
+        const data = yield (0, helpers_1.uploadFileFirebase)(file, user, lesson, dataFolder);
         if (data) {
             const fileData = new File_1.default(data);
             yield fileData.save();
@@ -120,8 +125,15 @@ const deleteFileFirebase = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const storageRef = (0, storage_1.ref)(config_1.storage, validateFile.refFile);
     try {
         yield (0, storage_1.deleteObject)(storageRef);
-        const { _id } = validateFile;
-        yield File_1.default.findByIdAndUpdate(_id, { state: false });
+        yield File_1.default.findByIdAndUpdate(id, { state: false });
+        if (validateFile.folderID) {
+            const idFolder = validateFile.folderID;
+            const folder = yield Folder_1.default.findById(idFolder);
+            if (folder) {
+                const files = folder.files.filter((item) => item.file.toString() !== id);
+                yield Folder_1.default.findByIdAndUpdate(idFolder, { files });
+            }
+        }
         return res.send({ msg: "Archivo eliminado" });
     }
     catch (error) {
