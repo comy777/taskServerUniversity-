@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
-import { ref, deleteObject, StorageReference } from "firebase/storage";
-import { storage } from "../firebase/config";
 import File from "../models/File";
 import Lesson from "../models/Lesson";
 import { deleteImage, uploadImageCloudinary } from "../utils/upload";
-import { uploadFileFirebase, validateFolderById } from "../utils/helpers";
+import {
+  uploadFileFirebase,
+  validateFolderById,
+  deleteFileFirebase,
+} from "../utils/helpers";
 import Folder from "../models/Folder";
 import { FolderProps } from "../interfaces/interfaces";
 
@@ -93,16 +95,15 @@ export const uploadFile = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteFileFirebase = async (req: Request, res: Response) => {
+export const deleteFile = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.user;
   const validateFile = await File.findById(id);
   if (!validateFile) return res.send({ error: "El archivo no existe" });
   if (validateFile.user.toString() !== user)
     return res.send({ error: "No tiene permisos" });
-  const storageRef: StorageReference = ref(storage, validateFile.refFile);
   try {
-    await deleteObject(storageRef);
+    await deleteFileFirebase(validateFile.refFile);
     await File.findByIdAndUpdate(id, { state: false });
     if (validateFile.folderID) {
       const idFolder = validateFile.folderID;

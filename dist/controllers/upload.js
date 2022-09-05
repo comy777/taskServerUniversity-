@@ -12,9 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteFileFirebase = exports.uploadFile = exports.getFiles = exports.deleteImageUpload = exports.uploadImage = void 0;
-const storage_1 = require("firebase/storage");
-const config_1 = require("../firebase/config");
+exports.deleteFile = exports.uploadFile = exports.getFiles = exports.deleteImageUpload = exports.uploadImage = void 0;
 const File_1 = __importDefault(require("../models/File"));
 const Lesson_1 = __importDefault(require("../models/Lesson"));
 const upload_1 = require("../utils/upload");
@@ -114,7 +112,7 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.uploadFile = uploadFile;
-const deleteFileFirebase = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const user = req.user;
     const validateFile = yield File_1.default.findById(id);
@@ -122,9 +120,8 @@ const deleteFileFirebase = (req, res) => __awaiter(void 0, void 0, void 0, funct
         return res.send({ error: "El archivo no existe" });
     if (validateFile.user.toString() !== user)
         return res.send({ error: "No tiene permisos" });
-    const storageRef = (0, storage_1.ref)(config_1.storage, validateFile.refFile);
     try {
-        yield (0, storage_1.deleteObject)(storageRef);
+        yield (0, helpers_1.deleteFileFirebase)(validateFile.refFile);
         yield File_1.default.findByIdAndUpdate(id, { state: false });
         if (validateFile.folderID) {
             const idFolder = validateFile.folderID;
@@ -141,4 +138,4 @@ const deleteFileFirebase = (req, res) => __awaiter(void 0, void 0, void 0, funct
         return res.send({ error: "Error del servidor" });
     }
 });
-exports.deleteFileFirebase = deleteFileFirebase;
+exports.deleteFile = deleteFile;

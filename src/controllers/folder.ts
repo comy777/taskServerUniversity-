@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
 import Folder from "../models/Folder";
+import { FileReponse } from "../interfaces/interfaces";
 import {
   validateFolderById,
   validateFolderData,
   getFilesData,
 } from "../utils/helpers";
+import File from "../models/File";
+import { deleteObject, ref, StorageReference } from "firebase/storage";
+import { storage } from "../firebase/config";
+import { deleteFileFirebase } from "../utils/helpers";
 
 export const getFoldersLesson = async (req: Request, res: Response) => {
   const user = req.user;
@@ -66,7 +71,16 @@ export const deleteFolder = async (req: Request, res: Response) => {
   const validate = await validateFolderById(id, user);
   if (validate.error) return res.send({ error: validate.error });
   try {
-    await Folder.findByIdAndUpdate(id, { state: false });
+    const folder = await Folder.findByIdAndUpdate(id, { state: false });
+    if (folder.files) {
+      if (folder.files.length > 0) {
+        folder.files.forEach(async (item: FileReponse) => {
+          const { file } = item;
+          const fileData = await File.findByIdAndUpdate(file, { state: false });
+          await deleteFileFirebase(fileData.refFile);
+        });
+      }
+    }
     return res.send({ msg: "Carpeta eliminada" });
   } catch (error) {
     console.log(error);

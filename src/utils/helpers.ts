@@ -1,4 +1,10 @@
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  StorageReference,
+  deleteObject,
+} from "firebase/storage";
 import { v4 } from "uuid";
 import { getIconsFile } from "../controllers/faticon";
 import { storage } from "../firebase/config";
@@ -123,4 +129,9 @@ export const getFilesData = async (
       if (contador === filesData.length) resolve(files);
     });
   });
+};
+
+export const deleteFileFirebase = async (dataRef: string) => {
+  const storageRef: StorageReference = ref(storage, dataRef);
+  await deleteObject(storageRef);
 };
