@@ -8,7 +8,7 @@ import {
 } from "../controllers/upload";
 import { check } from "express-validator";
 import { validate } from "../middlewares/validate";
-import { getFiles, deleteFile } from "../controllers/upload";
+import { getFiles, deleteFile, updateFile } from "../controllers/upload";
 
 const upload = multer({ storage: memoryStorage() }).single("file");
 const uploadImageMulter = multer({ dest: "./src/uploads/" }).single("image");
@@ -56,6 +56,17 @@ uploadRouter.delete(
   "/file/:id",
   [validateToken, check("id", "Mongo id no valido").isMongoId(), validate],
   deleteFile
+);
+
+uploadRouter.put(
+  "/:id",
+  [
+    validateToken,
+    check("id", "No es un mongo id valido").isMongoId(),
+    check("filename", "El nombre es requerido").notEmpty(),
+    validate,
+  ],
+  updateFile
 );
 
 export default uploadRouter;

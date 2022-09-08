@@ -121,3 +121,19 @@ export const deleteFile = async (req: Request, res: Response) => {
     return res.send({ error: "Error del servidor" });
   }
 };
+
+export const updateFile = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = req.user;
+  const validateFile = await File.findById(id);
+  if (!validateFile) return res.send({ error: "Archivo no encontrado" });
+  if (validateFile.user.toString() !== user)
+    return res.send({ error: "No tiene permisos" });
+  try {
+    const file = await File.findByIdAndUpdate(id, req.body, { new: true });
+    return res.send({ file });
+  } catch (error) {
+    console.log(error);
+    return res.send({ error: "Error del servidor" });
+  }
+};
