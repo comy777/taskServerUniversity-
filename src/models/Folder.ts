@@ -26,6 +26,10 @@ const FolderSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    icon: {
+      type: String,
+      default: "https://cdn-icons-png.flaticon.com/512/716/716784.png",
+    },
   },
   { timestamps: true }
 );
