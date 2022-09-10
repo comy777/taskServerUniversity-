@@ -59,7 +59,7 @@ uploadRouter.delete(
 );
 
 uploadRouter.put(
-  "/:id",
+  "/file/:id",
   [
     validateToken,
     check("id", "No es un mongo id valido").isMongoId(),

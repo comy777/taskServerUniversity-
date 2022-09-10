@@ -54,4 +54,10 @@ uploadRouter.post("/file/:lesson/:folder", [
     upload,
 ], upload_1.uploadFile);
 uploadRouter.delete("/file/:id", [jwt_1.validateToken, (0, express_validator_1.check)("id", "Mongo id no valido").isMongoId(), validate_1.validate], upload_2.deleteFile);
+uploadRouter.put("/file/:id", [
+    jwt_1.validateToken,
+    (0, express_validator_1.check)("id", "No es un mongo id valido").isMongoId(),
+    (0, express_validator_1.check)("filename", "El nombre es requerido").notEmpty(),
+    validate_1.validate,
+], upload_2.updateFile);
 exports.default = uploadRouter;

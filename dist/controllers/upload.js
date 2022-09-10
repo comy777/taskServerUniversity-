@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteFile = exports.uploadFile = exports.getFiles = exports.deleteImageUpload = exports.uploadImage = void 0;
+exports.updateFile = exports.deleteFile = exports.uploadFile = exports.getFiles = exports.deleteImageUpload = exports.uploadImage = void 0;
 const File_1 = __importDefault(require("../models/File"));
 const Lesson_1 = __importDefault(require("../models/Lesson"));
 const upload_1 = require("../utils/upload");
@@ -139,3 +139,21 @@ const deleteFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteFile = deleteFile;
+const updateFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const user = req.user;
+    const validateFile = yield File_1.default.findById(id);
+    if (!validateFile)
+        return res.send({ error: "Archivo no encontrado" });
+    if (validateFile.user.toString() !== user)
+        return res.send({ error: "No tiene permisos" });
+    try {
+        const file = yield File_1.default.findByIdAndUpdate(id, req.body, { new: true });
+        return res.send({ file });
+    }
+    catch (error) {
+        console.log(error);
+        return res.send({ error: "Error del servidor" });
+    }
+});
+exports.updateFile = updateFile;
