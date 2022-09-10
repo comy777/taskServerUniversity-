@@ -74,7 +74,7 @@ export const getIcons = async (req: Request, res: Response) => {
   const data = await tokenStorageData(q);
   if (!data) return res.send({ error: "Error del servidor" });
   const { data: dataIcons } = data;
-  return res.send({ icon: dataIcons[0].images["512"] });
+  return res.send({ icon: dataIcons[1].images["512"] });
 };
 
 export const getIconsFile = async (query: string) => {
