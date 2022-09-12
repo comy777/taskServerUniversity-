@@ -81,5 +81,5 @@ export const getIconsFile = async (query: string) => {
   const data = await tokenStorageData(query);
   if (!data) return;
   const { data: dataIcons } = data;
-  return dataIcons[0].images["512"];
+  return dataIcons[1].images["512"];
 };
